@@ -1,0 +1,809 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ATP Serve Tiers</title>
+<meta name="description" content="ATP players grouped into High, Mid and Low serve tiers on each surface by k-means clustering of their last 52 weeks of serve stats, with each tier's tournament odds from a Markov chain over draw rounds.">
+<meta property="og:title" content="ATP Serve Tiers">
+<meta property="og:description" content="ATP players grouped into High, Mid and Low serve tiers on each surface by k-means clustering of their last 52 weeks of serve stats, with each tier's tournament odds from a Markov chain over draw rounds.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%232a78d6'/%3E%3C/svg%3E">
+<style>
+:root {
+  color-scheme: light;
+  --bg: #f9f9f7;
+  --panel: #fcfcfb;
+  --popover: #ffffff;
+  --fg: #0b0b0b;
+  --fg-muted: #52514e;
+  --line: rgba(11, 11, 11, 0.10);
+  --grid: #e1e0d9;
+  --axis: #c3c2b7;
+  --ref: #898781;
+  --bad: #d03b3b;
+  --shadow: 0 6px 20px rgba(11, 11, 11, 0.10);
+  /* tiers are ordered, so one hue in three lightness steps; High is the strongest step */
+  --tier-high: #104281;
+  --tier-mid: #2a78d6;
+  --tier-low: #86b6ef;
+  --tier-unrated: #898781;
+  --heat: #2a78d6;
+  --sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --radius: 12px;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+    --bg: #0d0d0d;
+    --panel: #1a1a19;
+    --popover: #262624;
+    --fg: #f0efec;
+    --fg-muted: #c3c2b7;
+    --line: rgba(255, 255, 255, 0.10);
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --shadow: 0 6px 20px rgba(0, 0, 0, 0.45);
+    --tier-high: #86b6ef;
+    --tier-mid: #3987e5;
+    --tier-low: #184f95;
+    --heat: #3987e5;
+  }
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font: 15px/1.5 var(--sans); }
+a { color: inherit; text-underline-offset: 2px; }
+.st-wrap { max-width: 72rem; margin: 0 auto; padding: 40px 16px 48px; display: flex; flex-direction: column; gap: 20px; }
+.st-kicker { margin: 0 0 4px; color: var(--fg-muted); font-size: 13px; }
+.st-head h1 { margin: 0; font-size: clamp(1.75rem, 4vw, 2.25rem); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; text-wrap: balance; }
+.st-take { color: var(--fg-muted); margin: 8px 0 0; max-width: 72ch; }
+.st-take b { font-weight: 600; color: var(--fg); }
+.st-tabs { display: flex; flex-wrap: wrap; gap: 6px; }
+.st-tab { font: inherit; padding: 6px 14px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--fg); cursor: pointer; }
+.st-tab:hover, .st-chip:hover { border-color: var(--fg-muted); }
+.st-tab[aria-selected="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.st-tab:focus-visible, .st-chip:focus-visible, .st-th:focus-visible, .st-search:focus-visible, a:focus-visible { outline: 2px solid var(--fg); outline-offset: 2px; }
+.st-tiers { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr)); gap: 16px; }
+.st-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); gap: 16px; }
+.st-card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; min-width: 0; display: flex; flex-direction: column; gap: 12px; }
+.st-card h2 { margin: 0; font-size: 17px; font-weight: 600; }
+.st-note { margin: 0; color: var(--fg-muted); font-size: 13px; max-width: 72ch; }
+.st-tier-name { display: flex; align-items: center; gap: 6px; font-weight: 600; }
+.st-sw { width: 10px; height: 10px; border-radius: 50%; display: inline-block; flex: none; }
+.st-big { font-size: 2rem; font-weight: 600; line-height: 1.1; }
+.st-big small { font-size: 13px; font-weight: 400; color: var(--fg-muted); margin-left: 6px; }
+.st-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 0; }
+.st-stats div { min-width: 0; }
+.st-stats dt { color: var(--fg-muted); font-size: 13px; }
+.st-stats dd { margin: 0; }
+.st-legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--fg-muted); }
+.st-legend span { display: inline-flex; align-items: center; gap: 6px; }
+.st-chart { position: relative; min-height: 300px; }
+.st-chart svg { display: block; overflow: visible; }
+.st-chart text { fill: var(--fg-muted); font-size: 12px; font-family: var(--sans); }
+.st-chart .st-tierlabel { fill: var(--fg); font-weight: 600; }
+.st-tip { position: absolute; pointer-events: none; background: var(--popover); border: 1px solid var(--line); border-radius: 8px; box-shadow: var(--shadow); padding: 6px 10px; font-size: 13px; white-space: nowrap; z-index: 2; }
+.st-tip-sub { color: var(--fg-muted); }
+.st-tip b { font-weight: 600; }
+.st-fail { display: flex; align-items: center; justify-content: center; gap: 6px; min-height: inherit; color: var(--fg-muted); font-size: 13px; }
+.st-fail::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--bad); }
+.st-tools { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; justify-content: space-between; }
+.st-search { font: inherit; padding: 6px 10px; border: 1px solid var(--line); border-radius: 8px; background: var(--bg); color: var(--fg); width: min(100%, 16rem); }
+.st-count { color: var(--fg-muted); font-size: 13px; }
+.st-tablebox { max-height: 30rem; overflow: auto; }
+.st-table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.st-table th { position: sticky; top: 0; background: var(--panel); text-align: right; padding: 0; border-bottom: 1px solid var(--line); font-weight: 600; font-size: 13px; vertical-align: bottom; }
+.st-table th:first-child, .st-table td:first-child, .st-table th.st-l, .st-table td.st-l { text-align: left; }
+.st-th { font: inherit; color: var(--fg-muted); background: none; border: 0; padding: 6px 10px; cursor: pointer; text-align: inherit; width: 100%; white-space: nowrap; }
+.st-th[aria-pressed="true"] { color: var(--fg); }
+.st-table td { padding: 6px 10px; text-align: right; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.st-tiercell { display: inline-flex; align-items: center; gap: 6px; }
+.st-block { display: flex; flex-direction: column; gap: 16px; margin-top: 12px; }
+.st-block-head h2 { margin: 0; font-size: clamp(1.375rem, 3vw, 1.75rem); font-weight: 600; line-height: 1.2; text-wrap: balance; }
+.st-block-head .st-note { margin-top: 6px; }
+.st-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.st-chip { font: inherit; font-size: 13px; padding: 6px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--panel); color: var(--fg); cursor: pointer; }
+.st-chip[aria-pressed="true"] { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+.st-scroll { overflow-x: auto; }
+.st-grid-table { border-collapse: separate; border-spacing: 2px; width: 100%; font-variant-numeric: tabular-nums; }
+.st-grid-table th { font-size: 13px; color: var(--fg-muted); font-weight: 600; padding: 6px; text-align: center; white-space: nowrap; }
+.st-grid-table th.st-rowhead, .st-grid-table th:first-child { text-align: left; color: var(--fg); }
+.st-grid-table td { text-align: center; padding: 6px 10px; border-radius: 4px; white-space: nowrap; }
+.st-grid-table td small { display: block; font-size: 12px; color: var(--fg-muted); }
+.st-grid-table td.st-zero { color: var(--fg-muted); }
+.st-rowname { display: inline-flex; align-items: center; gap: 6px; }
+.st-pair { display: inline-flex; gap: 6px; align-items: baseline; }
+.st-pair .st-actual { color: var(--fg-muted); }
+.st-foot { color: var(--fg-muted); font-size: 13px; }
+.st-foot p { margin: 0; max-width: 72ch; }
+@media (max-width: 760px) { .st-sec { display: none; } }
+@media (max-width: 480px) { .st-wrap { padding-top: 24px; } .st-card { padding: 16px; } }
+</style>
+</head>
+<body>
+<main class="st-wrap">
+  <header class="st-head">
+    <p class="st-kicker">Men's singles · last 52 weeks to <span id="as-of"></span></p>
+    <h1>ATP serve tiers</h1>
+    <p class="st-take" id="takeaway"></p>
+  </header>
+
+  <div class="st-tabs" role="tablist" aria-label="Surface">
+    <button class="st-tab" role="tab" data-surface="all" id="surface-all">All surfaces</button>
+    <button class="st-tab" role="tab" data-surface="hard" id="surface-hard">Hard</button>
+    <button class="st-tab" role="tab" data-surface="clay" id="surface-clay">Clay</button>
+    <button class="st-tab" role="tab" data-surface="grass" id="surface-grass">Grass</button>
+  </div>
+
+  <section class="st-tiers" aria-label="Tier summary">
+    <div class="st-card st-tiercard" data-tier="High"></div>
+    <div class="st-card st-tiercard" data-tier="Mid"></div>
+    <div class="st-card st-tiercard" data-tier="Low"></div>
+  </section>
+
+  <section class="st-grid">
+    <div class="st-card">
+      <h2>How k-means split the players</h2>
+      <p class="st-note">Each dot is a player, placed by serve-strength score: the average of six standardized serve stats, with double faults counted against. Dashed lines are the cluster boundaries.</p>
+      <div class="st-legend"></div>
+      <div class="st-chart" id="strength-chart"></div>
+    </div>
+    <div class="st-card">
+      <h2>Aces against service games won</h2>
+      <p class="st-note">The two stats that separate tiers most visibly. High-tier players hold serve more often, and most of them hit more aces.</p>
+      <div class="st-legend"></div>
+      <div class="st-chart" id="scatter-chart"></div>
+    </div>
+  </section>
+
+  <section class="st-block" id="odds" aria-labelledby="odds-title">
+    <div class="st-block-head">
+      <h2 id="odds-title">Tournament odds by serve tier</h2>
+      <p class="st-take" id="odds-take"></p>
+      <p class="st-note" id="odds-note"></p>
+    </div>
+    <div class="st-chips" role="group" aria-label="Where players enter the draw">
+      <button class="st-chip" data-entry="R32" aria-pressed="true">Enter at round of 32 (most events)</button>
+      <button class="st-chip" data-entry="R128" aria-pressed="false">Enter at round of 128 (Grand Slams, 96-draw Masters)</button>
+    </div>
+    <div class="st-grid">
+      <div class="st-card">
+        <h2>Chance of reaching each round</h2>
+        <p class="st-note">Dots are the chain's estimate and lines are 90% intervals from resampling whole tournaments. The scale is square-root so small chances stay visible.</p>
+        <div class="st-legend st-olegend"></div>
+        <div class="st-chart" id="reach-chart"></div>
+      </div>
+      <div class="st-card">
+        <h2>Chance of winning a match, by round</h2>
+        <p class="st-note">These are the transition probabilities: from each round a player moves on with this chance and is out otherwise. The small number is matches played.</p>
+        <div class="st-scroll"><table class="st-grid-table" id="winprob-table"></table></div>
+      </div>
+    </div>
+    <div class="st-grid">
+      <div class="st-card">
+        <h2>Transition matrix</h2>
+        <p class="st-note">One tier's full chain. Each row is the round a player is in, each column where they are after the match. W (title) and Out are absorbing states.</p>
+        <div class="st-chips" role="group" aria-label="Tier shown in the matrix">
+          <button class="st-chip" data-mtier="High" aria-pressed="true">High</button>
+          <button class="st-chip" data-mtier="Mid" aria-pressed="false">Mid</button>
+          <button class="st-chip" data-mtier="Low" aria-pressed="false">Low</button>
+          <button class="st-chip" data-mtier="Unrated" aria-pressed="false">Unrated</button>
+        </div>
+        <div class="st-scroll">
+          <table class="st-grid-table" id="matrix-table">
+            <thead><tr>
+              <th>From</th>
+              <th>R128</th><th>R64</th><th>R32</th><th>R16</th><th>QF</th><th>SF</th><th>F</th><th>W</th><th>Out</th>
+            </tr></thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+      <div class="st-card">
+        <h2>Model check</h2>
+        <p class="st-note">For players who entered at the selected round: the chain's prediction, then the share who actually got that far.</p>
+        <div class="st-scroll"><table class="st-grid-table" id="check-table"></table></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="st-card" id="players">
+    <h2>Players</h2>
+    <p class="st-note">Last 52 weeks, from the ATP Tour serve leaderboard. Select a column heading to sort.</p>
+    <div class="st-tools">
+      <input class="st-search" id="player-search" type="search" placeholder="Search players or countries" aria-label="Search players or countries">
+      <span class="st-count" id="player-count"></span>
+    </div>
+    <div class="st-tablebox">
+      <table class="st-table" id="player-table">
+        <thead><tr>
+          <th><button class="st-th" data-k="player">Player</button></th>
+          <th class="st-l st-sec"><button class="st-th" data-k="country">Country</button></th>
+          <th class="st-l"><button class="st-th" data-k="tier">Tier</button></th>
+          <th><button class="st-th" data-k="strength_score">Strength</button></th>
+          <th><button class="st-th" data-k="serve_rating">Serve rating</button></th>
+          <th class="st-sec"><button class="st-th" data-k="first_serve_pct">1st serve %</button></th>
+          <th class="st-sec"><button class="st-th" data-k="first_serve_pts_won_pct">1st won %</button></th>
+          <th class="st-sec"><button class="st-th" data-k="second_serve_pts_won_pct">2nd won %</button></th>
+          <th><button class="st-th" data-k="service_games_won_pct">Svc games %</button></th>
+          <th><button class="st-th" data-k="aces_per_match">Aces</button></th>
+          <th class="st-sec"><button class="st-th" data-k="df_per_match">DFs</button></th>
+        </tr></thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="st-card" id="method">
+    <h2>Method</h2>
+    <p class="st-note">Each surface is clustered on its own, since a strong number on grass is ordinary on clay. The six stats are 1st serve in, 1st and 2nd serve points won, service games won, aces per match and double faults per match. Each is clipped at the 2.5th and 97.5th percentiles so small-sample outliers can't claim a cluster, then standardized. Their average, with double faults flipped, is the strength score, and k-means with k = 3 (k-means++ seeding, best of 50 runs) splits that score into High, Mid and Low. Tiers are relative: they rank players against the others on that surface's leaderboard. ATP's own serve rating is not used for clustering because it is built from the same stats; it is shown as a check. Serve speed is not published on the leaderboard, so it isn't included.</p>
+    <p class="st-note">Tournament odds use main-draw singles results from the ATP Tour results archive over the same 52 weeks, leaving out round-robin events (ATP Finals, Next Gen Finals) and walkovers. A tier's chance of winning in a round is its record in that round, pulled toward 50% by the weight of 10 matches so thin rounds don't give extreme values. Those chances are the chain's transition probabilities, and the chance of reaching each later round comes from the chain's fundamental matrix. Intervals come from 500 resamples of whole tournaments. On the all-surfaces view players are grouped by their all-surface tier; on a surface, by their tier there, or by their all-surface tier if they aren't on that surface's leaderboard. Unrated players aren't on any serve leaderboard, usually because they played too few tour matches. Tiers and results come from the same 52 weeks, so the odds show how the tiers line up with results rather than forecasting future events. The ATP archive has no results for 's-Hertogenbosch 2026, so that event is left out, and on grass the round of 128 rests on a single event, Wimbledon.</p>
+  </section>
+
+  <footer class="st-foot">
+    <p>Serve stats from the <a href="https://www.atptour.com/en/stats/leaderboard">ATP Tour serve leaderboard</a> and results from the ATP Tour results archive. Tiers, odds and charts are independent analysis, not affiliated with or endorsed by the ATP Tour.</p>
+  </footer>
+</main>
+<noscript><p class="st-wrap">Turn on JavaScript to see the tiers.</p></noscript>
+
+<script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+<!-- filled in by build_site.py from the CSV files in output/ -->
+<script id="dash-data" type="application/json">{"as_of":"2026-10-26","tables":{"serve_tiers":{"columns":["surface","tier","strength_score","player_id","player","country","serve_rating","first_serve_pct","first_serve_pts_won_pct","second_serve_pts_won_pct","service_games_won_pct","aces_per_match","df_per_match"],"rows":[["all","High","1.4","S0AG","Jannik Sinner","ITA","306","65.3","81.2","58.2","93.7","9.1","1.5"],["all","High","1.477","Z355","Alexander Zverev","GER","302.4","71.8","76.8","56.6","89.4","10","2.2"],["all","High","1.377","FB98","Taylor Fritz","USA","299.8","66.1","79","53.4","89.2","13.9","1.8"],["all","High","1.199","S0S1","Ben Shelton","USA","299.1","68.1","76.7","57.5","89.8","10","3"],["all","High","1.02","HB71","Hubert Hurkacz","POL","297.4","64.7","79.4","51.2","89.5","15.2","2.6"],["all","High","0.854","AG37","Felix Auger-Aliassime","CAN","291.9","67","78.1","51.3","87.9","10.4","2.8"],["all","High","0.978","N0AE","Brandon Nakashima","USA","290.8","65.1","78.2","50.9","87.5","10.2","1.1"],["all","High","0.929","BK40","Matteo Berrettini","ITA","290.1","65.3","76.8","54.2","86.3","9.6","2.1"],["all","High","0.624","BK92","Alexander Bublik","KAZ","288.9","65.4","77.8","50.3","87","11.9","3.5"],["all","High","0.878","L0BV","Jiri Lehecka","CZE","287.8","63.8","75.7","53.7","87.5","8.5","1.4"],["all","High","0.649","RC91","Arthur Rinderknech","FRA","287.8","62.7","77.6","51.4","86.7","12.6","3.2"],["all","High","0.694","D643","Novak Djokovic","SRB","287.7","66.5","74.9","54.9","86.2","8.1","2.9"],["all","High","0.735","KE29","Karen Khachanov","RUS","286.5","64.9","75.4","53.9","86.5","7.8","2"],["all","High","0.675","TE51","Stefanos Tsitsipas","GRE","286.5","61.9","77.4","53.8","87.8","7.9","2.3"],["all","High","0.594","A0E2","Carlos Alcaraz","ESP","285.2","67","72.7","55.8","87.5","4.6","2.4"],["all","High","0.733","DH50","Alejandro Davidovich Fokina","ESP","284.6","69.6","71.3","56.1","84.5","4.6","1.5"],["all","High","0.611","F0F1","Arthur Fils","FRA","284.1","63.5","74.6","56.3","86.1","5.8","2.2"],["all","Mid","0.406","HB64","Quentin Halys","FRA","282.7","58.8","79","51","85.4","11.6","3.1"],["all","High","0.548","H997","Yannick Hanfmann","GER","282.7","62.1","75.7","53.9","84.4","8.9","2.3"],["all","Mid","0.34","VA25","Valentin Vacherot","MON","282.2","63.7","76.4","51.1","84.5","9.8","3.3"],["all","Mid","0.462","RH16","Casper Ruud","NOR","281.9","66.2","71.4","55.4","85.3","6.1","2.5"],["all","High","0.537","P09Z","Alexei Popyrin","AUS","281.8","62.8","74.8","53.2","83.2","10","2.2"],["all","High","0.581","F0FV","Joao Fonseca","BRA","281.4","67.7","70.1","56.4","83.5","5.4","1.7"],["all","Mid","0.409","BT72","Nuno Borges","POR","281","66.3","74.8","50.3","85","6.5","1.9"],["all","Mid","0.439","SU87","Lorenzo Sonego","ITA","279.9","66.6","73.4","52","82.2","7.6","1.9"],["all","Mid","0.148","K0AZ","Aleksandar Kovacevic","USA","279.7","59.6","77.5","50.8","85","10.6","3.8"],["all","Mid","0.187","B0PG","Alexander Blockx","BEL","279.7","59.8","77.6","51.3","85.8","8.5","3.3"],["all","Mid","0.228","GJ37","Tallon Griekspoor","NED","279.4","63.4","74.2","52.6","83.3","9.3","3.4"],["all","Mid","0.418","PL56","Tommy Paul","USA","279.3","61.1","74.1","54.5","84.7","6.8","1.9"],["all","Mid","0.412","EA24","Tomas Martin Etcheverry","ARG","278.5","64.6","72.9","54.1","82.1","6.6","1.8"],["all","Mid","0.233","RE44","Andrey Rublev","RUS","278.4","62","74.9","52.1","84.3","7.8","2.7"],["all","Mid","0.309","TE30","Alejandro Tabilo","CHI","277.8","64.2","74.1","52.1","83","6.3","1.9"],["all","Mid","-0.011","M0NI","Jakub Mensik","CZE","277.6","60.5","78.2","48","83.6","11.3","4"],["all","Mid","-0.038","MM58","Daniil Medvedev","RUS","277.6","64","75.8","48.3","84.6","8.8","3.9"],["all","Mid","0.206","A0GC","Terence Atmane","FRA","277.6","62","75.7","51.5","83.3","7.7","2.6"],["all","Mid","0.212","TD51","Frances Tiafoe","USA","276.6","59","74.7","53.8","84.8","6.6","2.3"],["all","Mid","0.049","HH26","Ugo Humbert","FRA","276","59.1","75.7","53.3","84","7.2","3.3"],["all","Mid","0.105","T0A1","Thiago Agustin Tirante","ARG","275.4","57.7","76.2","53","82.8","8.6","2.9"],["all","Mid","0.067","M0EJ","Lorenzo Musetti","ITA","273.6","64.6","69.9","54.6","82.4","4.5","2.4"],["all","Mid","0.087","MQ75","Kamil Majchrzak","POL","272.9","62.9","72","51","81.5","7.4","1.9"],["all","Mid","-0.138","M0QI","Alex Michelsen","USA","272","63.8","72.2","51.4","81.5","6.2","3.1"],["all","Mid","-0.192","SL28","Jan-Lennard Struff","GER","271.6","56.9","76.2","49.7","81.5","10.9","3.6"],["all","Mid","0.002","M0CI","Fabian Marozsan","HUN","271.4","65.7","69.9","53.1","80.1","4.7","2.1"],["all","Mid","-0.09","N771","Cameron Norrie","GBR","271.1","63.7","70.1","53.5","81.6","4.8","2.6"],["all","Mid","-0.08","GC88","Marcos Giron","USA","270.6","64","70.5","51.7","81.2","5.4","2.2"],["all","Low","-0.551","C0JP","Raphael Collignon","BEL","270.3","62.7","75.5","47.2","81.9","8","5"],["all","Mid","-0.059","F0DM","Arthur Fery","GBR","269.3","63.4","69.4","54","80.1","4.3","1.9"],["all","Low","-0.297","B0GG","Mattia Bellucci","ITA","269","61.8","72.3","50.6","80.3","7.3","3.3"],["all","Low","-0.451","BU13","Zizou Bergs","BEL","268.9","58.5","74.4","51","81.8","7.5","4.3"],["all","Low","-0.39","T0HA","Learner Tien","USA","268.5","62.1","72.4","51.4","80.6","5.7","3.7"],["all","Mid","-0.158","J0DZ","Rafael Jodar","ESP","268.2","63.2","69.3","53.7","79.9","4.3","2.2"],["all","Low","-0.373","C977","Marin Cilic","CRO","267.8","57.4","76.5","47.8","80.3","9","3.2"],["all","Low","-0.256","KI95","Miomir Kecmanovic","SRB","267.3","62.4","71.7","51.5","79.1","5","2.4"],["all","Low","-0.321","D994","James Duckworth","AUS","267.2","55","73.8","52.6","81.5","7.9","3.6"],["all","Low","-0.327","DH58","Alex de Minaur","AUS","266.5","57.5","70.9","55.2","81.4","4.4","2.9"],["all","Low","-0.34","MU94","Jaume Munar","ESP","266.5","61.7","72.8","50","78.9","5.7","2.6"],["all","Low","-0.643","G0IX","Arthur Gea","FRA","265.9","59.4","73.5","50.9","80.4","6.3","4.6"],["all","Low","-0.479","AE14","Daniel Altmaier","GER","264.7","62.9","71.5","48.2","78.2","6.8","2.9"],["all","Low","-0.43","C0E9","Flavio Cobolli","ITA","263.7","55.9","72.6","52.2","79.5","6.3","2.8"],["all","Low","-0.508","D0FJ","Luciano Darderi","ITA","262.4","57.7","71.6","51.1","78.6","6","2.6"],["all","Low","-0.859","V812","Botic van de Zandschulp","NED","262.2","61.3","72.8","46.1","79.6","7.3","4.9"],["all","Low","-0.585","C0AU","Francisco Cerundolo","ARG","262.1","60.5","70.1","51.9","78.3","4.3","3"],["all","Low","-0.38","B0CD","Jenson Brooksby","USA","262","68.3","66.9","50.4","74.9","2.8","1.3"],["all","Low","-0.588","N0BS","Mariano Navone","ARG","262","71.7","65.9","49.8","75","2","2.4"],["all","Low","-0.66","M0N7","Daniel Merida","ESP","261.8","67.2","67.6","49.5","77.2","3.4","3.1"],["all","Low","-0.604","C0C8","Juan Manuel Cerundolo","ARG","261.5","56.5","71.6","51.9","78.5","6.1","3.1"],["all","Low","-0.476","ME82","Adrian Mannarino","FRA","261.4","62.6","70.5","49.7","75.9","4.6","1.9"],["all","Low","-0.892","SU55","Denis Shapovalov","CAN","260.7","58.1","72.5","50.2","77.6","7.7","5.4"],["all","Low","-0.628","M0FH","Tomas Machac","CZE","260.3","63.6","68.6","49.3","76.7","4.6","2.5"],["all","Low","-1.0","L0IL","Martin Landaluce","ESP","259.5","60.7","71","49.7","77.4","5.8","5.1"],["all","Low","-0.654","H0BH","Rinky Hijikata","AUS","259.4","59.4","69.8","51.6","76.6","4.7","2.7"],["all","Low","-0.479","B0BI","Sebastian Baez","ARG","258.4","70.7","64.1","51","72.7","1.8","1.9"],["all","Low","-0.682","B0ID","Ignacio Buse","PER","257.6","61.5","69.1","50.3","74.7","4.2","2.2"],["all","Low","-0.832","V0DP","Adolfo Daniel Vallejo","PAR","257.3","63","68.9","48.8","75.8","3.6","2.8"],["all","Low","-0.834","MW02","Corentin Moutet","FRA","256.3","65","66.4","50.3","74.1","3.3","2.8"],["all","Low","-1.114","KI82","Vit Kopriva","CZE","253.5","62","68.4","47.8","74.7","4.1","3.5"],["all","Low","-1.153","A0FC","Matteo Arnaldi","ITA","252","58.9","71.1","46.7","73.3","5.6","3.6"],["all","Low","-1.258","V0DZ","Luca Van Assche","FRA","251.8","61.9","67.4","48.4","73.5","4.8","4.2"],["all","Low","-1.176","U182","Camilo Ugo Carabelli","ARG","250.9","58.8","69.2","47.6","74.5","3.8","3"],["all","Low","-0.831","D923","Damir Dzumhur","BIH","240.6","64.2","61.7","49.9","65.1","1.4","1.7"],["hard","High","1.464","S0AG","Jannik Sinner","ITA","309.9","67.9","82.2","56.8","94.7","9.5","1.2"],["hard","High","1.377","Z355","Alexander Zverev","GER","303.7","71.7","77.6","55.1","90.4","11.1","2.2"],["hard","High","0.967","HB71","Hubert Hurkacz","POL","298.3","65.9","79","51.3","90.1","14.5","2.5"],["hard","High","0.999","S0S1","Ben Shelton","USA","297","68.5","76.6","56.1","88.8","9.8","2.8"],["hard","High","1.084","FB98","Taylor Fritz","USA","296.1","65.2","78.3","52.7","88.7","13","1.8"],["hard","High","1.024","BK40","Matteo Berrettini","ITA","294.6","64.6","77.4","56.4","87.3","11.1","2.2"],["hard","High","1.041","N0AE","Brandon Nakashima","USA","294","64.9","78.4","52.4","88.7","10.8","1.2"],["hard","Mid","0.558","BK92","Alexander Bublik","KAZ","291.1","64.8","78.5","50.8","88.3","12.2","3.5"],["hard","High","0.631","AG37","Felix Auger-Aliassime","CAN","290.4","66.2","78.3","52.2","86.8","9.7","2.8"],["hard","High","0.784","DH50","Alejandro Davidovich Fokina","ESP","290.2","70.8","72.7","56","87.3","5","1.6"],["hard","High","0.794","K0AH","Sebastian Korda","USA","290","62.5","78.4","54.4","86.9","9.7","1.9"],["hard","High","0.689","KE29","Karen Khachanov","RUS","289.8","64","77.2","53.9","88.4","8.5","2.2"],["hard","Mid","0.542","GJ37","Tallon Griekspoor","NED","287.6","64.2","75.9","54.9","85.5","10","2.9"],["hard","Mid","0.527","A0E2","Carlos Alcaraz","ESP","287.1","67.5","73.2","55.9","87.9","4.8","2.2"],["hard","Mid","0.473","TE51","Stefanos Tsitsipas","GRE","286.2","61.5","77.5","53.7","87.5","8.5","2.5"],["hard","Mid","0.337","B0PG","Alexander Blockx","BEL","285.6","60.1","78.3","52.3","87.8","10.3","3.2"],["hard","Mid","0.256","K0AZ","Aleksandar Kovacevic","USA","285.2","59.5","78.8","51.7","87.3","11.6","3.7"],["hard","Mid","0.424","RH16","Casper Ruud","NOR","285.1","66.3","72.2","53.9","87.2","7.9","2.4"],["hard","High","0.631","EA24","Tomas Martin Etcheverry","ARG","285","64.1","74.5","55","84.2","8.7","1.5"],["hard","Mid","0.433","F0F1","Arthur Fils","FRA","284.2","63.3","73.9","57","85.6","6.6","2.2"],["hard","Mid","0.517","L0BV","Jiri Lehecka","CZE","283.9","62.9","75.6","53","86.3","7.5","1.4"],["hard","Mid","0.345","BT72","Nuno Borges","POR","283.7","66.3","75.6","51.4","85.7","6.9","2.2"],["hard","Mid","0.283","D643","Novak Djokovic","SRB","283.7","64.4","75","54.3","85.9","7","2.9"],["hard","Mid","0.219","VA25","Valentin Vacherot","MON","283.4","64.1","77","50.5","84.5","10.6","3.3"],["hard","Mid","0.299","RE44","Andrey Rublev","RUS","283.3","62.4","77.4","51.4","85.8","8.9","2.6"],["hard","Mid","0.046","MM58","Daniil Medvedev","RUS","282.9","64.7","76.6","49.1","86.8","9.5","3.8"],["hard","Mid","0.255","HB64","Quentin Halys","FRA","282.5","60.1","78.7","49.1","85.2","12.2","2.8"],["hard","Mid","0.402","PL56","Tommy Paul","USA","282.2","61.3","75.2","54.8","85.6","7.1","1.8"],["hard","Mid","0.217","TE30","Alejandro Tabilo","CHI","280.4","64.4","74.4","52.1","84.4","7.3","2.2"],["hard","Mid","0.136","HH26","Ugo Humbert","FRA","280.1","60.6","76.3","54.2","84.8","7","2.8"],["hard","Mid","-0.09","M0NI","Jakub Mensik","CZE","279.5","60.5","79.1","48","84.2","11.6","3.9"],["hard","Mid","0.126","F0FV","Joao Fonseca","BRA","278.4","66.7","71.9","52.9","82.9","6.2","2.2"],["hard","Mid","-0.019","M0QI","Alex Michelsen","USA","278","64.3","73.6","52.3","84.1","6.6","2.9"],["hard","Mid","0.007","N771","Cameron Norrie","GBR","276","64.2","71.1","54.8","83","5.2","2.3"],["hard","Mid","-0.065","M0EJ","Lorenzo Musetti","ITA","275.7","64.1","70.6","55.4","83.2","5.1","2.7"],["hard","Mid","-0.144","A0GC","Terence Atmane","FRA","275.4","60.4","75.8","51.3","83.1","7.8","3"],["hard","Mid","-0.111","T0A1","Thiago Agustin Tirante","ARG","274.9","55.8","79","51.2","81.5","10.6","3.2"],["hard","Mid","-0.029","TD51","Frances Tiafoe","USA","274.2","59","74.5","52.9","83.4","6.3","1.9"],["hard","Mid","-0.179","DH58","Alex de Minaur","AUS","273.1","58.9","71.8","56.2","83.7","5.2","2.7"],["hard","Low","-0.371","T0HA","Learner Tien","USA","273.1","62.5","73.8","51.9","82.5","6","3.6"],["hard","Mid","-0.142","M0CI","Fabian Marozsan","HUN","272.4","65.1","69.8","54.2","80.5","5","2.2"],["hard","Low","-0.354","SL28","Jan-Lennard Struff","GER","271.8","59.6","75.6","48.9","81.2","9.8","3.3"],["hard","Low","-0.465","BU13","Zizou Bergs","BEL","271.5","57.6","74.8","52.5","83.1","7.4","3.9"],["hard","Low","-0.622","G0IX","Arthur Gea","FRA","270.4","59.9","74.6","51.7","82.2","6.4","4.4"],["hard","Low","-0.288","MQ75","Kamil Majchrzak","POL","269.7","62.3","71.4","50.3","80.2","7.7","2.2"],["hard","Low","-0.291","ME82","Adrian Mannarino","FRA","269.1","62.4","73.3","50","79.7","5.5","1.8"],["hard","Low","-0.41","KI95","Miomir Kecmanovic","SRB","268.4","62.1","72","51.1","79.7","6","2.5"],["hard","Low","-0.441","GC88","Marcos Giron","USA","267.3","63.5","69.9","50.6","80.1","5.4","2.2"],["hard","Low","-0.401","F0DM","Arthur Fery","GBR","266.2","63.8","68.3","53.7","78.3","4","1.9"],["hard","Low","-0.8","M0N7","Daniel Merida","ESP","266.1","64","69.5","50.8","81.3","4.4","3.9"],["hard","Low","-0.83","SU55","Denis Shapovalov","CAN","265.9","59","73.7","50.1","79.8","8.4","5.1"],["hard","Low","-0.543","N0BS","Mariano Navone","ARG","265.8","67.3","67.6","52.3","77.8","3.4","2.6"],["hard","Low","-0.398","B0CD","Jenson Brooksby","USA","265.5","67.6","68.4","50.6","77.5","2.8","1.4"],["hard","Low","-0.642","C0AU","Francisco Cerundolo","ARG","265.1","61.2","71.3","51.8","78.6","5.2","3"],["hard","Low","-0.498","J0DZ","Rafael Jodar","ESP","264.9","63","68.6","53.3","78","4.1","2.1"],["hard","Low","-0.945","V812","Botic van de Zandschulp","NED","264.8","61","74.2","45.6","81.2","7.9","5.1"],["hard","Low","-0.651","M0FH","Tomas Machac","CZE","263.5","63.9","69.1","49.2","78.3","5.3","2.3"],["hard","Low","-0.29","B0BI","Sebastian Baez","ARG","263.1","71.9","63.6","53.1","74.2","2.1","1.8"],["hard","Low","-0.797","D994","James Duckworth","AUS","262.5","54.9","72.8","50.9","79.9","7.7","3.7"],["hard","Low","-0.736","C0E9","Flavio Cobolli","ITA","262.4","56.5","72.3","51.4","78.5","6.6","2.9"],["hard","Low","-0.828","D0FJ","Luciano Darderi","ITA","261.2","59.1","71.6","48.8","77.2","7.5","3"],["hard","Low","-0.903","AE14","Daniel Altmaier","GER","260.2","61.5","71","47.9","75.8","7.1","3.1"],["hard","Low","-1.136","V0DZ","Luca Van Assche","FRA","258.2","58.5","72.5","46.6","77.9","6.3","3.6"],["hard","Low","-1.004","H0BH","Rinky Hijikata","AUS","256.9","58.6","69.4","51.9","75.4","4.5","2.9"],["hard","Low","-0.895","B0ID","Ignacio Buse","PER","255.5","61.7","68.5","50.6","72.1","4.8","2.2"],["hard","Low","-1.57","A0FC","Matteo Arnaldi","ITA","240.6","57.6","70.9","43.2","67.9","4.6","3.6"],["clay","High","1.297","S0S1","Ben Shelton","USA","300.2","65.9","76.9","60.5","91.2","8.6","2.9"],["clay","High","1.076","S0AG","Jannik Sinner","ITA","293.8","61","77.2","61.1","91.2","4.9","1.6"],["clay","High","0.916","HB64","Quentin Halys","FRA","291.7","57.9","79.9","56.9","89","11.6","3.6"],["clay","High","0.921","Z355","Alexander Zverev","GER","290.4","71.4","72.7","58","84.8","5.8","2.3"],["clay","High","0.894","HB71","Hubert Hurkacz","POL","288.6","60.2","78.6","52.7","84.3","15.1","2.3"],["clay","High","0.918","FB98","Taylor Fritz","USA","287.7","68.3","72.5","51.5","83.9","14","2.5"],["clay","High","0.889","TE51","Stefanos Tsitsipas","GRE","287.1","62.8","76.5","54.9","88.9","5.9","1.9"],["clay","High","0.766","D643","Novak Djokovic","SRB","286.5","69.4","74.2","54.9","83.8","7.5","3.3"],["clay","High","0.728","RC91","Arthur Rinderknech","FRA","285.4","63.2","76.9","52.1","86.8","10","3.6"],["clay","High","0.877","H997","Yannick Hanfmann","GER","285.2","61.5","75.2","56.6","86.3","7.5","1.9"],["clay","High","0.907","L0BV","Jiri Lehecka","CZE","284","66.8","72.4","54","85","6.9","1.1"],["clay","High","0.809","F0FV","Joao Fonseca","BRA","283.7","67.5","70.3","58.4","84.5","4.3","1.3"],["clay","High","0.747","AG37","Felix Auger-Aliassime","CAN","283.6","68.6","74.3","50.5","84.9","7.7","2.4"],["clay","High","0.741","A0GC","Terence Atmane","FRA","282.4","63.7","75.2","53.8","85","6.6","1.9"],["clay","High","0.537","F0F1","Arthur Fils","FRA","281.2","63.2","75.7","54.9","87.2","2.3","2.1"],["clay","High","0.543","RH16","Casper Ruud","NOR","280.6","66","70.5","58.3","84.1","4.1","2.4"],["clay","High","0.66","BK40","Matteo Berrettini","ITA","279.9","64.4","74.7","53","83.7","5.7","1.6"],["clay","High","0.665","TE30","Alejandro Tabilo","CHI","279.8","64.3","74.7","53.3","83.5","5.5","1.5"],["clay","High","0.571","P09Z","Alexei Popyrin","AUS","279.1","58.9","77.1","52.7","84.7","8.3","2.6"],["clay","High","0.45","VA25","Valentin Vacherot","MON","278.8","62.6","74.9","52.6","84.6","7.3","3.2"],["clay","High","0.694","N0AE","Brandon Nakashima","USA","278.7","65.4","76.5","48","82.5","7","0.7"],["clay","High","0.54","T0A1","Thiago Agustin Tirante","ARG","278.1","59.3","74.2","55.8","84","7.1","2.3"],["clay","High","0.576","KE29","Karen Khachanov","RUS","276.5","66.5","71.2","53.2","81.3","5.5","1.2"],["clay","High","0.57","CD85","Pablo Carreno Busta","ESP","276","67.1","67.5","60.6","77.6","4.3","1.1"],["clay","Mid","0.348","J0DZ","Rafael Jodar","ESP","274.9","64","70","55.7","83.2","4.1","2.1"],["clay","Mid","0.253","BK92","Alexander Bublik","KAZ","274.6","64.6","73.2","49.3","83.2","7.8","3.5"],["clay","Mid","0.056","C0JP","Raphael Collignon","BEL","273.5","62.4","76.9","48.5","82.2","8.5","5"],["clay","Mid","0.199","B0PG","Alexander Blockx","BEL","272.9","59.1","76.8","50.4","83.3","6.5","3.2"],["clay","Mid","0.165","F0F2","Jaime Faria","POR","272.7","60.2","73.6","53.3","82.1","7.1","3.6"],["clay","Mid","0.269","EA24","Tomas Martin Etcheverry","ARG","272.2","64.7","71.7","53","80.4","4.5","2.1"],["clay","Mid","0.242","RE44","Andrey Rublev","RUS","271.8","61.7","71.4","53.4","82.1","5.5","2.3"],["clay","Mid","0.044","C0DF","Francisco Comesana","ARG","271.4","65.1","73.9","47.7","80.7","8.4","4.4"],["clay","Mid","0.173","M0JF","Hamad Medjedovic","SRB","271.1","67.4","71.3","48.2","80.6","6.4","2.8"],["clay","Mid","-0.005","A0E2","Carlos Alcaraz","ESP","270.5","62.9","68.4","54.9","84.2","3.3","3.2"],["clay","Mid","0.067","P0HW","Dino Prizmic","CRO","269.8","59.1","70.9","56.1","82","4.6","2.9"],["clay","Mid","0.076","TD51","Frances Tiafoe","USA","269.4","56.2","73.5","52.2","83.3","7.4","3.2"],["clay","Mid","0.153","BT72","Nuno Borges","POR","268.9","64.1","72.6","46.9","81.7","5.6","2"],["clay","Mid","-0.085","M0NI","Jakub Mensik","CZE","268.2","58.5","77.1","47.4","81.6","7.9","4.3"],["clay","Mid","0.091","MV14","Alex Molcan","SVK","267.9","63.3","69.3","55.1","79.3","2.7","1.8"],["clay","Mid","0.05","PL56","Tommy Paul","USA","267.4","61","70.1","53.4","80.5","4.7","2.3"],["clay","Mid","-0.013","C0E9","Flavio Cobolli","ITA","266.8","55","72.3","55.6","81.9","4.6","2.6"],["clay","Mid","0.003","M0CI","Fabian Marozsan","HUN","265.7","65.7","67.4","54.4","77.5","2.5","1.8"],["clay","Mid","-0.034","M0EJ","Lorenzo Musetti","ITA","265.1","66.8","67.1","51.3","79.2","2.4","1.7"],["clay","Mid","-0.097","AE14","Daniel Altmaier","GER","263.7","64.1","69.8","49.6","78","4.5","2.3"],["clay","Mid","-0.191","A0FC","Matteo Arnaldi","ITA","263.5","60.7","71.3","50.2","78.4","6.3","3.4"],["clay","Mid","-0.296","D0C1","Jesper de Jong","NED","262.7","62.5","73.5","44","77.9","9.4","4.6"],["clay","Mid","-0.136","D0FJ","Luciano Darderi","ITA","262.5","56","72.1","53","79.1","4.6","2.3"],["clay","Mid","-0.231","C0C8","Juan Manuel Cerundolo","ARG","262.4","59.1","70.3","51.4","78.8","6.1","3.3"],["clay","Mid","-0.188","V0DP","Adolfo Daniel Vallejo","PAR","262.3","64.6","69.1","49.9","77.8","3.2","2.3"],["clay","Mid","-0.276","PH64","Andrea Pellegrino","ITA","261.1","55.1","68.4","55.7","81.5","2.8","2.4"],["clay","Mid","-0.255","C0AU","Francisco Cerundolo","ARG","260.5","60.4","68.4","53","77.8","3.2","2.3"],["clay","Mid","-0.218","KI95","Miomir Kecmanovic","SRB","260","61.3","70.3","52.1","75.8","2.3","1.8"],["clay","Mid","-0.248","N0AM","Emilio Nava","USA","259.4","66","70.4","41.5","77.3","7.5","3.3"],["clay","Mid","-0.358","M0N7","Daniel Merida","ESP","259.2","69.1","66.8","48.6","75.1","2.1","2.5"],["clay","Mid","-0.287","B0ID","Ignacio Buse","PER","259","60.6","69.4","50.1","77","4.2","2.3"],["clay","Low","-0.523","HH26","Ugo Humbert","FRA","258.5","54.5","73.6","49.7","78.4","6.9","4.6"],["clay","Mid","-0.237","DH50","Alejandro Davidovich Fokina","ESP","257.8","69.3","64.1","50.6","72.9","2.1","1.2"],["clay","Low","-0.652","N0BS","Mariano Navone","ARG","257.1","74.7","64.6","46.6","72.5","1","2.3"],["clay","Low","-0.497","N771","Cameron Norrie","GBR","256.8","61.1","67.6","50.4","77.4","3.3","3"],["clay","Low","-0.416","S0H2","Aleksandr Shevchenko","KAZ","256.6","59","68.9","52.4","74.6","4.5","2.8"],["clay","Low","-0.464","U182","Camilo Ugo Carabelli","ARG","256.3","61.5","69","48.2","76.6","3.7","2.7"],["clay","Low","-0.497","M0QI","Alex Michelsen","USA","256.1","62.3","68.1","50","74.5","4.4","3.2"],["clay","Low","-0.633","TA29","Marco Trungelliti","ARG","255.6","60.3","68.6","48.9","77.7","3.9","3.8"],["clay","Low","-0.708","V812","Botic van de Zandschulp","NED","254.9","62","69.5","48","75.5","4.3","4.4"],["clay","Low","-0.42","G0FW","Vilius Gaubas","LTU","254.6","68.5","63.7","47.9","73.6","2.5","1.6"],["clay","Low","-0.634","KI82","Vit Kopriva","CZE","254","63.4","68.7","47.3","74.7","3.2","3.3"],["clay","Low","-0.57","M0FH","Tomas Machac","CZE","254","63","67.6","49.4","73.6","3.3","2.9"],["clay","Low","-0.684","T0HA","Learner Tien","USA","253.6","61.1","68.3","50.8","73.3","4","3.9"],["clay","Low","-0.627","B0FV","Roman Andres Burruchaga","ARG","252.8","64.6","66.1","49.7","72.5","2.8","2.9"],["clay","Low","-0.763","BU13","Zizou Bergs","BEL","251.3","57","68","51.8","73.5","5","4"],["clay","Low","-0.618","B0BI","Sebastian Baez","ARG","250.9","68.8","64.1","49","69.7","1.3","2"],["clay","Low","-0.921","V0DZ","Luca Van Assche","FRA","250.7","64.7","64.6","50.5","71.9","3.8","4.8"],["clay","Low","-0.678","MW02","Corentin Moutet","FRA","250.2","64.4","65.8","48.5","71.8","2","2.3"],["clay","Low","-0.842","MM58","Daniil Medvedev","RUS","249.8","61.8","72","42.4","73.3","4.6","4.3"],["clay","Low","-0.72","D0DW","Titouan Droguet","FRA","249.7","56.2","68.6","49.5","73.5","5","3.1"],["clay","Low","-0.888","MO44","Pedro Martinez","ESP","246.5","67.4","66.2","43.9","70.8","0.8","2.6"],["clay","Low","-0.969","DH58","Alex de Minaur","AUS","246.1","53.8","67.5","51.8","74.1","2.2","3.3"],["clay","Low","-0.56","D923","Damir Dzumhur","BIH","243.7","66.1","61.9","51.2","64.8","1","1.3"],["clay","Low","-1.3","SU55","Denis Shapovalov","CAN","240.3","53","68.4","48.9","72.5","3.6","6.1"],["clay","Low","-1.745","G0IX","Arthur Gea","FRA","209.1","52.2","59","43.4","56.5","5","7"],["grass","High","1.401","Z355","Alexander Zverev","GER","319","73","80.6","60","93.8","14","2.4"],["grass","High","1.221","S0AG","Jannik Sinner","ITA","317.5","65.5","84.5","56.6","95.2","18.3","2.6"],["grass","High","1.305","RC91","Arthur Rinderknech","FRA","316.4","63.5","82.5","59.5","93.1","20.8","3"],["grass","High","1.278","FB98","Taylor Fritz","USA","312.5","68.1","81.9","55.9","91.4","16.9","1.7"],["grass","High","1.192","M0GZ","Giovanni Mpetshi Perricard","FRA","311.3","72.9","76.4","52.9","89.7","21.8","2.4"],["grass","High","1.011","BK40","Matteo Berrettini","ITA","311","70.3","80.7","50.4","91.2","22.7","4.3"],["grass","High","0.936","S0S1","Ben Shelton","USA","307.3","69.5","76.6","59","92.6","13.6","4"],["grass","High","0.935","AG37","Felix Auger-Aliassime","CAN","307","67.4","82","49.8","94.5","16.4","3.1"],["grass","High","0.934","BK92","Alexander Bublik","KAZ","304.6","68.8","82","50.2","88.5","18.6","3.5"],["grass","High","0.917","L0BV","Jiri Lehecka","CZE","303.1","63.8","78.9","55.4","93.1","13.9","2"],["grass","High","0.828","HB71","Hubert Hurkacz","POL","302.6","64.8","81.6","49.1","92.4","18.1","3.4"],["grass","High","0.937","D0CO","Jack Draper","GBR","301.5","73","76.2","61.3","87.8","4","0.8"],["grass","High","0.93","SU87","Lorenzo Sonego","ITA","301.1","71","75.8","56.5","88.1","11.2","1.5"],["grass","High","0.798","D643","Novak Djokovic","SRB","299.8","69.9","75.1","56.4","88.9","12.3","2.8"],["grass","High","0.664","KE17","Nick Kyrgios","AUS","299.7","77.6","76.5","42.9","91.4","13.3","2"],["grass","High","0.61","D994","James Duckworth","AUS","297.3","54.8","80.2","62.3","92.5","10.5","3"],["grass","High","0.609","TD51","Frances Tiafoe","USA","295.2","62.9","76.8","59.6","91.7","6.8","2.6"],["grass","Mid","0.286","B0PG","Alexander Blockx","BEL","294.9","64.5","79.1","52","91.3","16","8"],["grass","High","0.705","Z371","Zhizhen Zhang","CHN","294","67.9","77.3","50.6","89.2","10","1"],["grass","High","0.67","DH50","Alejandro Davidovich Fokina","ESP","293.9","66.9","74.3","60.9","87.8","5.6","1.6"],["grass","High","0.509","B0GG","Mattia Bellucci","ITA","293.7","62.6","72.9","60.9","91","10","3.7"],["grass","High","0.587","Z0BZ","Michael Zheng","USA","293.5","63","74.8","53.2","90.2","15","2.7"],["grass","High","0.627","F0F1","Arthur Fils","FRA","293.3","67.9","78.9","50.8","88.2","9.5","2"],["grass","High","0.567","H997","Yannick Hanfmann","GER","293.1","62.9","82.6","51.1","88.2","10.9","2.6"],["grass","High","0.669","BT72","Nuno Borges","POR","292.8","70","75.6","53.5","88","6.7","1"],["grass","High","0.584","KE29","Karen Khachanov","RUS","292.5","67.1","74.7","55.9","87.3","10","2.5"],["grass","High","0.508","SX50","Roman Safiullin","RUS","291.3","68.4","75","56.1","87","7.8","3"],["grass","High","0.477","M0NI","Jakub Mensik","CZE","291","65.7","74.2","50","84.4","21","4.3"],["grass","High","0.578","MQ75","Kamil Majchrzak","POL","289.7","65.4","74","57.9","86.6","6.9","1.1"],["grass","High","0.418","D0DT","Martin Damm","USA","289.3","67.2","74.7","50","88","12.8","3.4"],["grass","High","0.461","PL56","Tommy Paul","USA","289.2","60.2","77.3","55.3","89.3","9.4","2.3"],["grass","High","0.509","N0AE","Brandon Nakashima","USA","288.9","65.7","79.7","46.4","87.6","11.2","1.7"],["grass","Mid","0.332","D875","Grigor Dimitrov","BUL","288.7","62.2","77.2","55.7","86.4","11.9","4.7"],["grass","High","0.456","O513","Sebastian Ofner","AUT","286.8","59.4","76.8","51.5","81.6","20.5","3"],["grass","High","0.437","TE51","Stefanos Tsitsipas","GRE","286.8","61","81.6","48.8","86.1","11.3","2"],["grass","Mid","0.32","P0HW","Dino Prizmic","CRO","286.4","62.1","72.2","60.2","88.9","6","3"],["grass","Mid","0.214","V0AM","Otto Virtanen","FIN","286.3","58","75.7","54","88.9","14.7","5"],["grass","Mid","0.236","SL28","Jan-Lennard Struff","GER","285.8","56.3","81.8","48.2","86.9","17.4","4.8"],["grass","High","0.448","W09E","Adam Walton","AUS","285.6","61.3","75.5","58.1","85.4","6","0.7"],["grass","Mid","0.371","WB32","Yibing Wu","CHN","284.6","63.9","76.7","50.7","85.3","10","2"],["grass","Mid","0.081","M0JF","Hamad Medjedovic","SRB","284.6","66.4","77.3","46.6","90","10","5.7"],["grass","Mid","0.069","C0JP","Raphael Collignon","BEL","282.7","65.1","79","46.9","87.9","9","5.2"],["grass","Mid","0.232","GJ37","Tallon Griekspoor","NED","282.6","67.7","71.7","50.8","83.9","12","3.5"],["grass","Mid","0.194","HH26","Ugo Humbert","FRA","282.4","59.8","76.2","54.8","86.8","8.1","3.3"],["grass","Mid","0.346","F0FV","Joao Fonseca","BRA","281.4","71.9","64.4","57.8","80.8","8","1.5"],["grass","Mid","0.122","SY67","Sho Shimabukuro","JPN","280.8","55.6","80.6","53.7","85.7","9","3.8"],["grass","Mid","-0.014","Q02L","Ethan Quinn","USA","280","63.6","79.1","47.9","85.2","9.8","5.6"],["grass","Mid","0.254","A0GC","Terence Atmane","FRA","280","66.8","76.2","47.9","81.7","9.4","2"],["grass","Mid","0.211","CH12","Jan Choinski","GBR","279.4","64.8","75.5","46.4","84.1","10.6","2"],["grass","Mid","0.139","B0BI","Sebastian Baez","ARG","279.3","74.8","72","47.2","83.3","4","2"],["grass","Mid","0.297","EA24","Tomas Martin Etcheverry","ARG","279.3","67","69.8","55.1","80","8.7","1.3"],["grass","Mid","0.141","MV14","Alex Molcan","SVK","279.2","68.9","69.2","54.5","83.3","6.3","3"],["grass","Mid","0.073","AE14","Daniel Altmaier","GER","278.8","64.1","76.1","46.3","84.6","11.5","3.8"],["grass","Mid","0.145","GC88","Marcos Giron","USA","278.6","65.9","74","49.8","84.4","6.9","2.4"],["grass","Mid","0.19","BM95","Benjamin Bonzi","FRA","277.1","66.7","75","49.1","81.8","5.8","1.3"],["grass","Mid","-0.025","MM58","Daniil Medvedev","RUS","277.1","62.5","75.1","50.4","84.4","9.1","4.4"],["grass","Mid","0.073","D0F6","Gabriel Diallo","CAN","276.9","69.8","72.1","47","81.4","9.9","3.3"],["grass","Mid","-0.079","L0IL","Martin Landaluce","ESP","276.7","62","74.1","51.3","83.1","11.6","5.4"],["grass","Mid","0.015","MU94","Jaume Munar","ESP","276.3","62.5","80.9","42.9","83.8","9.6","3.4"],["grass","Mid","0.012","CD85","Pablo Carreno Busta","ESP","276","67.7","69","52.5","84.8","5","3"],["grass","Mid","0.069","BD06","Roberto Bautista Agut","ESP","275.6","69.8","70.8","50","81.5","6","2.5"],["grass","Mid","-0.002","N0BS","Mariano Navone","ARG","275.2","75.9","66.1","54.4","77.8","3.5","2.5"],["grass","Mid","-0.269","F0F2","Jaime Faria","POR","275","60.9","75.3","52.9","82.9","12","9"],["grass","Mid","0.049","M0CI","Fabian Marozsan","HUN","274.5","67.6","72.9","47.7","81.8","6.7","2.2"],["grass","Mid","-0.05","K0AZ","Aleksandar Kovacevic","USA","274","61.4","78.8","44.4","80.4","13","4"],["grass","Mid","0.003","KI95","Miomir Kecmanovic","SRB","274","66.3","71.7","53","81.6","4","2.6"],["grass","Mid","-0.118","D0FJ","Luciano Darderi","ITA","273","61.4","68.1","51.7","86.8","8.3","3.3"],["grass","Mid","-0.006","F0DM","Arthur Fery","GBR","272.6","63.1","70.5","54.3","81.9","4.8","2"],["grass","Mid","-0.141","B0T6","Thijs Boogaard","NED","272.6","64.8","70.3","50.7","83.3","7.5","4"],["grass","Mid","-0.255","BU13","Zizou Bergs","BEL","272.3","61.4","76.7","46.6","83.3","10","5.7"],["grass","Mid","-0.061","H0BH","Rinky Hijikata","AUS","272","61.3","71.8","54","81.4","6.2","2.7"],["grass","Low","-0.409","RE44","Andrey Rublev","RUS","270","59.8","73.3","50.5","82.4","13.5","9.5"],["grass","Mid","-0.007","B0CD","Jenson Brooksby","USA","268.7","68.8","68.6","52.2","75.8","4.3","1"],["grass","Mid","-0.211","S0K7","Zachary Svajda","USA","267.6","57.4","76.8","49.1","80","7.3","3"],["grass","Mid","-0.27","DH58","Alex de Minaur","AUS","266.6","57.1","71.4","56","81.2","4","3.1"],["grass","Low","-0.645","TA29","Marco Trungelliti","ARG","265.9","60.6","75","46.8","85","6.5","8"],["grass","Low","-0.389","C0C8","Juan Manuel Cerundolo","ARG","265.9","57.2","73.2","50.3","82.4","7.3","4.5"],["grass","Low","-0.357","KI82","Vit Kopriva","CZE","265.7","58.8","73","50.3","80.6","7.2","4.2"],["grass","Low","-0.405","KF17","Soonwoo Kwon","KOR","265.6","51.9","72.9","56.2","82.1","7.5","5"],["grass","Low","-0.442","T0HA","Learner Tien","USA","265.3","61.3","70.7","48.9","82.4","7","5"],["grass","Low","-0.415","V812","Botic van de Zandschulp","NED","264.1","61.7","72.5","45.4","78.5","10.8","4.8"],["grass","Mid","-0.233","M0AW","Nicolas Mejia","COL","263.9","66.3","68.3","48.4","74.4","9","2.5"],["grass","Low","-0.513","F724","Marton Fucsovics","HUN","263.1","59","70.9","52.3","81.6","4.3","5"],["grass","Mid","-0.295","S0TM","Toby Samuel","GBR","262.9","62.8","69","51.8","76.5","5.2","2.4"],["grass","Low","-0.347","C0E9","Flavio Cobolli","ITA","262.6","55.9","74.8","47","77.9","10","3"],["grass","Mid","-0.31","MW02","Corentin Moutet","FRA","262.2","63.7","68.8","51.6","76.5","3.8","2.2"],["grass","Mid","-0.25","G0EU","Felix Gill","GBR","261","65.7","64.9","48.6","73.3","10","1.5"],["grass","Low","-0.683","D0C1","Jesper de Jong","NED","260.6","58.4","71.3","47.4","77.5","13.5","7.5"],["grass","Low","-0.599","T0A1","Thiago Agustin Tirante","ARG","260.6","57.1","73.7","44.7","82.4","7.7","5"],["grass","Low","-0.618","N771","Cameron Norrie","GBR","260.5","66.5","67.3","49.4","77.8","5.5","6"],["grass","Low","-0.51","O0A2","Gauthier Onclin","BEL","260.5","59.1","75.6","46.3","81","2","3.5"],["grass","Low","-0.501","J0DZ","Rafael Jodar","ESP","260.3","60","70.7","48","77.2","8.7","4.3"],["grass","Low","-0.498","HB64","Quentin Halys","FRA","260","52.5","78.7","47","77.4","8.4","4"],["grass","Low","-0.41","J0AZ","Kyrian Jacquet","FRA","259.6","47.6","77.5","54.1","77.4","8","5"],["grass","Mid","-0.304","H0DC","Giles Hussey","GBR","259.2","70.5","62","54.5","72.2","1.5","1.5"],["grass","Low","-0.386","ME82","Adrian Mannarino","FRA","258.6","61.9","67.4","55.1","72.7","3.7","2.2"],["grass","Low","-0.418","M0OQ","James McCabe","AUS","258.4","66","69.5","42.6","78.3","3.5","1.5"],["grass","Low","-0.588","K0A3","Patrick Kypson","USA","258.2","62.5","68.1","48.1","75","9.5","5"],["grass","Low","-0.87","F0BY","Jacob Fearnley","GBR","258","59.4","69","50","81.6","6","8"],["grass","Low","-0.441","M0N7","Daniel Merida","ESP","257.5","70.5","64.4","47.5","70.6","7.5","3"],["grass","Low","-0.464","B0ID","Ignacio Buse","PER","255.2","64.9","69.2","50.3","70.1","2.7","2"],["grass","Low","-0.571","R0EB","Valentin Royer","FRA","255.1","59.8","69.1","49.5","74.4","5.3","3"],["grass","Low","-0.741","SU55","Denis Shapovalov","CAN","254.1","59.2","69","53.5","69.2","9.5","6.3"],["grass","Low","-0.779","C0AU","Francisco Cerundolo","ARG","253.7","57","69.5","49.4","78.3","4.3","4.8"],["grass","Low","-0.51","M0HU","Shintaro Mochizuki","JPN","252.4","48.2","76.2","49.8","77","3.5","2.3"],["grass","Low","-0.736","W0AH","Harry Wendelken","GBR","251.8","55.3","70.6","50","75.9","3.5","3.5"],["grass","Low","-0.663","P09Z","Alexei Popyrin","AUS","251.6","61.2","71.7","46.1","68.6","7.7","3.7"],["grass","Low","-0.846","P0HT","Jack Pinnington Jones","GBR","251.5","64.3","70.3","41.2","75","6","5.3"],["grass","Low","-0.571","RH16","Casper Ruud","NOR","250.8","68.3","73.9","31.3","73.3","10","6"],["grass","Low","-1.028","M0QI","Alex Michelsen","USA","249","63","69.6","40.7","72.7","12","9"],["grass","Low","-0.781","C977","Marin Cilic","CRO","246.1","61.2","70.6","42.3","67.6","7.2","2.8"],["grass","Low","-1.179","V0DP","Adolfo Daniel Vallejo","PAR","241.4","58.6","64.7","49","70.6","4.5","6"],["grass","Low","-1.076","TE30","Alejandro Tabilo","CHI","236.9","61.4","67.2","41.9","64.7","4.7","3"],["grass","Low","-1.204","A0FC","Matteo Arnaldi","ITA","236.3","52.7","70.7","42.7","66.7","8","4.5"],["grass","Low","-1.255","S0NV","Abdullah Shelbayh","JOR","235.4","59.1","65.4","44.4","70","1","4.5"],["grass","Low","-0.677","D923","Damir Dzumhur","BIH","233.1","67.1","50.9","56.1","60","1.5","2.5"],["grass","Low","-1.309","B0FV","Roman Andres Burruchaga","ARG","231.6","67.9","63.2","39","63","3.5","5"],["grass","Low","-1.213","V832","Aleksandar Vukic","AUS","218.6","58","57.5","47.6","54.5","3.5","2.5"],["grass","Low","-1.244","V0DZ","Luca Van Assche","FRA","173.6","64.3","40.7","40","28.6","2","2"]]},"round_win":{"columns":["surface","tier","round","p_win","ci90_low","ci90_high","wins","played"],"rows":[["all","High","R128","0.7094","0.6172","0.7711","78","107"],["all","High","R64","0.6684","0.6219","0.7116","122","180"],["all","High","R32","0.6578","0.6187","0.7018","168","253"],["all","High","R16","0.6225","0.5721","0.6726","122","194"],["all","High","QF","0.6165","0.5485","0.6765","77","123"],["all","High","SF","0.5862","0.527","0.6512","46","77"],["all","High","F","0.5714","0.5082","0.6379","27","46"],["all","Mid","R128","0.5926","0.5503","0.6328","107","179"],["all","Mid","R64","0.6009","0.5548","0.6548","135","223"],["all","Mid","R32","0.5827","0.5466","0.6199","217","371"],["all","Mid","R16","0.5115","0.464","0.5543","129","252"],["all","Mid","QF","0.5435","0.4921","0.6027","70","128"],["all","Mid","SF","0.4815","0.407","0.5476","34","71"],["all","Mid","F","0.4048","0.311","0.5116","12","32"],["all","Low","R128","0.5326","0.4902","0.5661","142","266"],["all","Low","R64","0.4592","0.4151","0.5058","102","223"],["all","Low","R32","0.4963","0.459","0.5375","198","399"],["all","Low","R16","0.5485","0.5044","0.5937","125","227"],["all","Low","QF","0.4338","0.375","0.4928","54","126"],["all","Low","SF","0.5","0.409","0.5891","27","54"],["all","Low","F","0.5405","0.4545","0.6389","15","27"],["all","Unrated","R128","0.378","0.3481","0.415","153","408"],["all","Unrated","R64","0.2928","0.2533","0.3371","60","212"],["all","Unrated","R32","0.3765","0.347","0.4033","213","569"],["all","Unrated","R16","0.326","0.2824","0.3684","69","217"],["all","Unrated","QF","0.3418","0.2666","0.4054","22","69"],["all","Unrated","SF","0.3125","0.2142","0.4412","5","22"],["all","Unrated","F","0.4","0.3","0.5","1","5"],["hard","High","R128","0.6727","0.5573","0.772","32","45"],["hard","High","R64","0.6146","0.5547","0.6667","54","86"],["hard","High","R32","0.629","0.5641","0.6916","73","114"],["hard","High","R16","0.6087","0.5465","0.6744","51","82"],["hard","High","QF","0.6393","0.5685","0.712","34","51"],["hard","High","SF","0.5455","0.4317","0.6531","19","34"],["hard","High","F","0.5517","0.4583","0.6297","11","19"],["hard","Mid","R128","0.6577","0.6","0.7188","68","101"],["hard","Mid","R64","0.6629","0.6195","0.7017","111","165"],["hard","Mid","R32","0.6194","0.5876","0.6552","161","258"],["hard","Mid","R16","0.5368","0.4921","0.5829","97","180"],["hard","Mid","QF","0.5413","0.4701","0.61","54","99"],["hard","Mid","SF","0.5469","0.4762","0.6102","30","54"],["hard","Mid","F","0.5","0.4286","0.5791","14","28"],["hard","Low","R128","0.5276","0.5034","0.5565","100","189"],["hard","Low","R64","0.4398","0.3983","0.4896","68","156"],["hard","Low","R32","0.4578","0.4215","0.4941","109","239"],["hard","Low","R16","0.5194","0.4575","0.576","62","119"],["hard","Low","QF","0.4384","0.3499","0.5081","27","63"],["hard","Low","SF","0.4595","0.3421","0.575","12","27"],["hard","Low","F","0.4545","0.3529","0.5556","5","12"],["hard","Unrated","R128","0.3705","0.3261","0.4167","88","241"],["hard","Unrated","R64","0.2908","0.2404","0.3663","36","131"],["hard","Unrated","R32","0.3762","0.3366","0.4136","109","293"],["hard","Unrated","R16","0.3361","0.2698","0.403","35","109"],["hard","Unrated","QF","0.3111","0.2325","0.3915","9","35"],["hard","Unrated","SF","0.3158","0.2273","0.4286","1","9"],["hard","Unrated","F","0.4545","0.3846","0.5","0","1"],["clay","High","R128","0.6863","0.5263","0.7432","30","41"],["clay","High","R64","0.6081","0.5333","0.6604","40","64"],["clay","High","R32","0.68","0.6198","0.75","63","90"],["clay","High","R16","0.5783","0.4937","0.6463","43","73"],["clay","High","QF","0.4706","0.3913","0.5625","19","41"],["clay","High","SF","0.5667","0.4615","0.6667","12","20"],["clay","High","F","0.5909","0.5","0.6957","8","12"],["clay","Mid","R128","0.6","0.5357","0.6359","43","70"],["clay","Mid","R64","0.5806","0.5","0.6303","49","83"],["clay","Mid","R32","0.5939","0.5466","0.6462","93","155"],["clay","Mid","R16","0.5476","0.5079","0.5868","64","116"],["clay","Mid","QF","0.5946","0.5395","0.6572","39","64"],["clay","Mid","SF","0.4898","0.44","0.54","19","39"],["clay","Mid","F","0.4483","0.3462","0.5455","8","19"],["clay","Low","R128","0.4605","0.4342","0.5","30","66"],["clay","Low","R64","0.4127","0.3281","0.5172","21","53"],["clay","Low","R32","0.5385","0.4626","0.6161","65","120"],["clay","Low","R16","0.5412","0.4721","0.6068","41","75"],["clay","Low","QF","0.4118","0.3333","0.4667","16","41"],["clay","Low","SF","0.4615","0.3462","0.5769","7","16"],["clay","Low","F","0.4706","0.375","0.5789","3","7"],["clay","Unrated","R128","0.3371","0.2857","0.4333","25","79"],["clay","Unrated","R64","0.2826","0.2568","0.35","8","36"],["clay","Unrated","R32","0.2667","0.2307","0.3031","39","155"],["clay","Unrated","R16","0.18","0.1228","0.2445","4","40"],["clay","Unrated","QF","0.4286","0.3569","0.5","1","4"],["clay","Unrated","SF","0.4545","0.3846","0.5","0","1"],["clay","Unrated","F","0.5","0.5","0.5","0","0"],["grass","High","R128","0.8","0.5","0.86","27","30"],["grass","High","R64","0.5946","0.5","0.6154","17","27"],["grass","High","R32","0.5938","0.5405","0.6456","33","54"],["grass","High","R16","0.5833","0.5166","0.6471","23","38"],["grass","High","QF","0.6061","0.5714","0.6552","15","23"],["grass","High","SF","0.52","0.4545","0.5714","8","15"],["grass","High","F","0.5","0.4375","0.5625","4","8"],["grass","Mid","R128","0.4906","0.4892","0.5","21","43"],["grass","Mid","R64","0.5161","0.5","0.5205","11","21"],["grass","Mid","R32","0.5256","0.4675","0.5679","36","68"],["grass","Mid","R16","0.5","0.4047","0.5909","20","40"],["grass","Mid","QF","0.4333","0.3667","0.5","8","20"],["grass","Mid","SF","0.4444","0.3529","0.5238","3","8"],["grass","Mid","F","0.4615","0.4","0.5","1","3"],["grass","Low","R128","0.4375","0.4274","0.5","16","38"],["grass","Low","R64","0.3462","0.2931","0.5","4","16"],["grass","Low","R32","0.4255","0.375","0.4706","15","37"],["grass","Low","R16","0.3704","0.3077","0.44","5","17"],["grass","Low","QF","0.4","0.2941","0.5385","1","5"],["grass","Low","SF","0.5455","0.5","0.6154","1","1"],["grass","Low","F","0.5455","0.5","0.6154","1","1"],["grass","Unrated","R128","0.1852","0.082","0.5","0","17"],["grass","Unrated","R64","0.5","0.5","0.5","0","0"],["grass","Unrated","R32","0.2632","0.2083","0.3846","0","9"],["grass","Unrated","R16","0.4545","0.3846","0.5","0","1"],["grass","Unrated","QF","0.5","0.5","0.5","0","0"],["grass","Unrated","SF","0.5","0.5","0.5","0","0"],["grass","Unrated","F","0.5","0.5","0.5","0","0"]]},"round_reach":{"columns":["surface","tier","start","reach","prob","ci90_low","ci90_high"],"rows":[["all","High","R32","R16","0.6578","0.6187","0.7018"],["all","High","R32","QF","0.4095","0.3718","0.4511"],["all","High","R32","SF","0.2525","0.2226","0.282"],["all","High","R32","F","0.148","0.1259","0.1727"],["all","High","R32","Title","0.0846","0.07","0.1009"],["all","High","R128","R64","0.7094","0.6172","0.7711"],["all","High","R128","R32","0.4742","0.4068","0.5346"],["all","High","R128","R16","0.3119","0.2612","0.363"],["all","High","R128","QF","0.1942","0.1611","0.2241"],["all","High","R128","SF","0.1197","0.0958","0.1375"],["all","High","R128","F","0.0702","0.0552","0.0853"],["all","High","R128","Title","0.0401","0.0314","0.0487"],["all","Mid","R32","R16","0.5827","0.5466","0.6199"],["all","Mid","R32","QF","0.298","0.2639","0.3333"],["all","Mid","R32","SF","0.162","0.136","0.1889"],["all","Mid","R32","F","0.078","0.0616","0.096"],["all","Mid","R32","Title","0.0316","0.0219","0.0436"],["all","Mid","R128","R64","0.5926","0.5503","0.6328"],["all","Mid","R128","R32","0.3561","0.3173","0.3996"],["all","Mid","R128","R16","0.2075","0.1819","0.2351"],["all","Mid","R128","QF","0.1061","0.0931","0.1207"],["all","Mid","R128","SF","0.0577","0.0495","0.0681"],["all","Mid","R128","F","0.0278","0.0222","0.0343"],["all","Mid","R128","Title","0.0112","0.0077","0.0157"],["all","Low","R32","R16","0.4963","0.459","0.5375"],["all","Low","R32","QF","0.2722","0.2454","0.3027"],["all","Low","R32","SF","0.1181","0.0972","0.1385"],["all","Low","R32","F","0.0591","0.043","0.0756"],["all","Low","R32","Title","0.0319","0.0222","0.0416"],["all","Low","R128","R64","0.5326","0.4902","0.5661"],["all","Low","R128","R32","0.2446","0.218","0.2715"],["all","Low","R128","R16","0.1214","0.1069","0.1372"],["all","Low","R128","QF","0.0666","0.0585","0.0764"],["all","Low","R128","SF","0.0289","0.0232","0.0352"],["all","Low","R128","F","0.0144","0.0104","0.0187"],["all","Low","R128","Title","0.0078","0.0055","0.0103"],["all","Unrated","R32","R16","0.3765","0.347","0.4033"],["all","Unrated","R32","QF","0.1227","0.1031","0.1425"],["all","Unrated","R32","SF","0.0419","0.031","0.0518"],["all","Unrated","R32","F","0.0131","0.0089","0.0183"],["all","Unrated","R32","Title","0.0052","0.0038","0.0071"],["all","Unrated","R128","R64","0.378","0.3481","0.415"],["all","Unrated","R128","R32","0.1107","0.0957","0.1294"],["all","Unrated","R128","R16","0.0417","0.0348","0.0502"],["all","Unrated","R128","QF","0.0136","0.0108","0.0169"],["all","Unrated","R128","SF","0.0046","0.0032","0.006"],["all","Unrated","R128","F","0.0015","0.001","0.0021"],["all","Unrated","R128","Title","0.0006","0.0004","0.0008"],["hard","High","R32","R16","0.629","0.5641","0.6916"],["hard","High","R32","QF","0.3829","0.3269","0.4425"],["hard","High","R32","SF","0.2448","0.2079","0.2812"],["hard","High","R32","F","0.1335","0.1007","0.1716"],["hard","High","R32","Title","0.0737","0.052","0.0956"],["hard","High","R128","R64","0.6727","0.5573","0.772"],["hard","High","R128","R32","0.4134","0.3364","0.4752"],["hard","High","R128","R16","0.2601","0.2044","0.3077"],["hard","High","R128","QF","0.1583","0.1206","0.1934"],["hard","High","R128","SF","0.1012","0.0752","0.127"],["hard","High","R128","F","0.0552","0.0373","0.0759"],["hard","High","R128","Title","0.0305","0.0196","0.0423"],["hard","Mid","R32","R16","0.6194","0.5876","0.6552"],["hard","Mid","R32","QF","0.3325","0.2969","0.3698"],["hard","Mid","R32","SF","0.18","0.1488","0.2173"],["hard","Mid","R32","F","0.0984","0.0777","0.1222"],["hard","Mid","R32","Title","0.0492","0.0358","0.0643"],["hard","Mid","R128","R64","0.6577","0.6","0.7188"],["hard","Mid","R128","R32","0.4359","0.3893","0.4758"],["hard","Mid","R128","R16","0.27","0.2383","0.2972"],["hard","Mid","R128","QF","0.145","0.1261","0.1632"],["hard","Mid","R128","SF","0.0785","0.0635","0.0943"],["hard","Mid","R128","F","0.0429","0.0327","0.0541"],["hard","Mid","R128","Title","0.0215","0.0152","0.0291"],["hard","Low","R32","R16","0.4578","0.4215","0.4941"],["hard","Low","R32","QF","0.2378","0.2056","0.272"],["hard","Low","R32","SF","0.1042","0.0786","0.1287"],["hard","Low","R32","F","0.0479","0.0323","0.0646"],["hard","Low","R32","Title","0.0218","0.0136","0.0318"],["hard","Low","R128","R64","0.5276","0.5034","0.5565"],["hard","Low","R128","R32","0.232","0.2128","0.2576"],["hard","Low","R128","R16","0.1062","0.0942","0.1206"],["hard","Low","R128","QF","0.0552","0.0476","0.0637"],["hard","Low","R128","SF","0.0242","0.0181","0.03"],["hard","Low","R128","F","0.0111","0.0072","0.0152"],["hard","Low","R128","Title","0.0051","0.0031","0.0075"],["hard","Unrated","R32","R16","0.3762","0.3366","0.4136"],["hard","Unrated","R32","QF","0.1265","0.1014","0.1548"],["hard","Unrated","R32","SF","0.0393","0.0269","0.052"],["hard","Unrated","R32","F","0.0124","0.0092","0.0166"],["hard","Unrated","R32","Title","0.0056","0.0046","0.0067"],["hard","Unrated","R128","R64","0.3705","0.3261","0.4167"],["hard","Unrated","R128","R32","0.1077","0.0889","0.1337"],["hard","Unrated","R128","R16","0.0405","0.0323","0.0514"],["hard","Unrated","R128","QF","0.0136","0.01","0.0183"],["hard","Unrated","R128","SF","0.0042","0.0027","0.0062"],["hard","Unrated","R128","F","0.0013","0.0009","0.0019"],["hard","Unrated","R128","Title","0.0006","0.0005","0.0008"],["clay","High","R32","R16","0.68","0.6198","0.75"],["clay","High","R32","QF","0.3933","0.3376","0.4452"],["clay","High","R32","SF","0.1851","0.1474","0.2183"],["clay","High","R32","F","0.1049","0.0808","0.1312"],["clay","High","R32","Title","0.062","0.0459","0.08"],["clay","High","R128","R64","0.6863","0.5263","0.7432"],["clay","High","R128","R32","0.4173","0.2974","0.4784"],["clay","High","R128","R16","0.2838","0.2091","0.3318"],["clay","High","R128","QF","0.1641","0.1147","0.1946"],["clay","High","R128","SF","0.0772","0.0512","0.0913"],["clay","High","R128","F","0.0438","0.0279","0.0527"],["clay","High","R128","Title","0.0259","0.0155","0.0334"],["clay","Mid","R32","R16","0.5939","0.5466","0.6462"],["clay","Mid","R32","QF","0.3253","0.2899","0.3626"],["clay","Mid","R32","SF","0.1934","0.1671","0.2224"],["clay","Mid","R32","F","0.0947","0.0756","0.1146"],["clay","Mid","R32","Title","0.0425","0.029","0.0559"],["clay","Mid","R128","R64","0.6","0.5357","0.6359"],["clay","Mid","R128","R32","0.3484","0.2722","0.3799"],["clay","Mid","R128","R16","0.2069","0.1591","0.2339"],["clay","Mid","R128","QF","0.1133","0.0881","0.1301"],["clay","Mid","R128","SF","0.0674","0.052","0.0797"],["clay","Mid","R128","F","0.033","0.0252","0.0395"],["clay","Mid","R128","Title","0.0148","0.0098","0.0191"],["clay","Low","R32","R16","0.5385","0.4626","0.6161"],["clay","Low","R32","QF","0.2914","0.2393","0.3492"],["clay","Low","R32","SF","0.12","0.0879","0.1508"],["clay","Low","R32","F","0.0554","0.0346","0.0762"],["clay","Low","R32","Title","0.0261","0.0164","0.0375"],["clay","Low","R128","R64","0.4605","0.4342","0.5"],["clay","Low","R128","R32","0.1901","0.1482","0.2583"],["clay","Low","R128","R16","0.1023","0.0781","0.1455"],["clay","Low","R128","QF","0.0554","0.0406","0.0834"],["clay","Low","R128","SF","0.0228","0.0155","0.0347"],["clay","Low","R128","F","0.0105","0.0064","0.0172"],["clay","Low","R128","Title","0.005","0.0031","0.0079"],["clay","Unrated","R32","R16","0.2667","0.2307","0.3031"],["clay","Unrated","R32","QF","0.048","0.03","0.0689"],["clay","Unrated","R32","SF","0.0206","0.014","0.0299"],["clay","Unrated","R32","F","0.0094","0.007","0.0119"],["clay","Unrated","R32","Title","0.0047","0.0035","0.0059"],["clay","Unrated","R128","R64","0.3371","0.2857","0.4333"],["clay","Unrated","R128","R32","0.0953","0.0771","0.1556"],["clay","Unrated","R128","R16","0.0254","0.0199","0.0424"],["clay","Unrated","R128","QF","0.0046","0.0029","0.0082"],["clay","Unrated","R128","SF","0.002","0.0013","0.0035"],["clay","Unrated","R128","F","0.0009","0.0006","0.0014"],["clay","Unrated","R128","Title","0.0004","0.0003","0.0007"],["grass","High","R32","R16","0.5938","0.5405","0.6456"],["grass","High","R32","QF","0.3464","0.2981","0.4031"],["grass","High","R32","SF","0.2099","0.1851","0.2356"],["grass","High","R32","F","0.1092","0.0959","0.122"],["grass","High","R32","Title","0.0546","0.0428","0.0648"],["grass","High","R128","R64","0.8","0.5","0.86"],["grass","High","R128","R32","0.4757","0.25","0.5292"],["grass","High","R128","R16","0.2824","0.1395","0.3172"],["grass","High","R128","QF","0.1648","0.0844","0.1863"],["grass","High","R128","SF","0.0998","0.0538","0.1071"],["grass","High","R128","F","0.0519","0.0259","0.0584"],["grass","High","R128","Title","0.026","0.0119","0.0308"],["grass","Mid","R32","R16","0.5256","0.4675","0.5679"],["grass","Mid","R32","QF","0.2628","0.2031","0.3156"],["grass","Mid","R32","SF","0.1139","0.0801","0.1412"],["grass","Mid","R32","F","0.0506","0.0293","0.0716"],["grass","Mid","R32","Title","0.0234","0.0146","0.0329"],["grass","Mid","R128","R64","0.4906","0.4892","0.5"],["grass","Mid","R128","R32","0.2532","0.25","0.2547"],["grass","Mid","R128","R16","0.1331","0.1191","0.142"],["grass","Mid","R128","QF","0.0665","0.0514","0.0794"],["grass","Mid","R128","SF","0.0288","0.0203","0.0357"],["grass","Mid","R128","F","0.0128","0.0074","0.0181"],["grass","Mid","R128","Title","0.0059","0.0037","0.0083"],["grass","Low","R32","R16","0.4255","0.375","0.4706"],["grass","Low","R32","QF","0.1576","0.1285","0.1914"],["grass","Low","R32","SF","0.063","0.0497","0.0764"],["grass","Low","R32","F","0.0344","0.0248","0.0452"],["grass","Low","R32","Title","0.0188","0.0124","0.0278"],["grass","Low","R128","R64","0.4375","0.4274","0.5"],["grass","Low","R128","R32","0.1514","0.1253","0.25"],["grass","Low","R128","R16","0.0644","0.055","0.1096"],["grass","Low","R128","QF","0.0239","0.0203","0.0399"],["grass","Low","R128","SF","0.0095","0.0076","0.0168"],["grass","Low","R128","F","0.0052","0.0038","0.0098"],["grass","Low","R128","Title","0.0028","0.0019","0.0056"],["grass","Unrated","R32","R16","0.2632","0.2083","0.3846"],["grass","Unrated","R32","QF","0.1196","0.0874","0.1894"],["grass","Unrated","R32","SF","0.0598","0.0437","0.0947"],["grass","Unrated","R32","F","0.0299","0.0219","0.0473"],["grass","Unrated","R32","Title","0.015","0.0109","0.0237"],["grass","Unrated","R128","R64","0.1852","0.082","0.5"],["grass","Unrated","R128","R32","0.0926","0.041","0.25"],["grass","Unrated","R128","R16","0.0244","0.0133","0.0694"],["grass","Unrated","R128","QF","0.0111","0.0061","0.0329"],["grass","Unrated","R128","SF","0.0055","0.003","0.0164"],["grass","Unrated","R128","F","0.0028","0.0015","0.0082"],["grass","Unrated","R128","Title","0.0014","0.0008","0.0041"]]},"round_check":{"columns":["surface","tier","start","reach","entries","observed","model"],"rows":[["all","High","R32","R16","129","0.7132","0.6578"],["all","High","R32","QF","129","0.4419","0.4095"],["all","High","R32","SF","129","0.2403","0.2525"],["all","High","R32","F","129","0.1473","0.148"],["all","High","R32","Title","129","0.0775","0.0846"],["all","High","R128","R64","107","0.729","0.7094"],["all","High","R128","R32","107","0.4486","0.4742"],["all","High","R128","R16","107","0.271","0.3119"],["all","High","R128","QF","107","0.1682","0.1942"],["all","High","R128","SF","107","0.1028","0.1197"],["all","High","R128","F","107","0.0654","0.0702"],["all","High","R128","Title","107","0.0374","0.0401"],["all","Mid","R32","R16","234","0.6068","0.5827"],["all","Mid","R32","QF","234","0.3248","0.298"],["all","Mid","R32","SF","234","0.188","0.162"],["all","Mid","R32","F","234","0.094","0.078"],["all","Mid","R32","Title","234","0.0342","0.0316"],["all","Mid","R128","R64","179","0.5978","0.5926"],["all","Mid","R128","R32","179","0.3575","0.3561"],["all","Mid","R128","R16","179","0.1788","0.2075"],["all","Mid","R128","QF","179","0.0615","0.1061"],["all","Mid","R128","SF","179","0.0223","0.0577"],["all","Mid","R128","F","179","0.0","0.0278"],["all","Mid","R128","Title","179","0.0","0.0112"],["all","Low","R32","R16","296","0.527","0.4963"],["all","Low","R32","QF","296","0.2905","0.2722"],["all","Low","R32","SF","296","0.1149","0.1181"],["all","Low","R32","F","296","0.0709","0.0591"],["all","Low","R32","Title","296","0.0405","0.0319"],["all","Low","R128","R64","266","0.5338","0.5326"],["all","Low","R128","R32","266","0.2105","0.2446"],["all","Low","R128","R16","266","0.0827","0.1214"],["all","Low","R128","QF","266","0.0338","0.0666"],["all","Low","R128","SF","266","0.0075","0.0289"],["all","Low","R128","F","266","0.0038","0.0144"],["all","Low","R128","Title","266","0.0","0.0078"],["all","Unrated","R32","R16","503","0.3897","0.3765"],["all","Unrated","R32","QF","503","0.1312","0.1227"],["all","Unrated","R32","SF","503","0.0398","0.0419"],["all","Unrated","R32","F","503","0.0099","0.0131"],["all","Unrated","R32","Title","503","0.002","0.0052"],["all","Unrated","R128","R64","408","0.375","0.378"],["all","Unrated","R128","R32","408","0.1054","0.1107"],["all","Unrated","R128","R16","408","0.0294","0.0417"],["all","Unrated","R128","QF","408","0.0","0.0136"],["all","Unrated","R128","SF","408","0.0","0.0046"],["all","Unrated","R128","F","408","0.0","0.0015"],["all","Unrated","R128","Title","408","0.0","0.0006"],["hard","High","R32","R16","59","0.6271","0.629"],["hard","High","R32","QF","59","0.4237","0.3829"],["hard","High","R32","SF","59","0.2203","0.2448"],["hard","High","R32","F","59","0.1186","0.1335"],["hard","High","R32","Title","59","0.0508","0.0737"],["hard","High","R128","R64","45","0.7111","0.6727"],["hard","High","R128","R32","45","0.4","0.4134"],["hard","High","R128","R16","45","0.2","0.2601"],["hard","High","R128","QF","45","0.1333","0.1583"],["hard","High","R128","SF","45","0.1111","0.1012"],["hard","High","R128","F","45","0.0444","0.0552"],["hard","High","R128","Title","45","0.0222","0.0305"],["hard","Mid","R32","R16","145","0.6552","0.6194"],["hard","Mid","R32","QF","145","0.3655","0.3325"],["hard","Mid","R32","SF","145","0.2207","0.18"],["hard","Mid","R32","F","145","0.1241","0.0984"],["hard","Mid","R32","Title","145","0.0621","0.0492"],["hard","Mid","R128","R64","101","0.6733","0.6577"],["hard","Mid","R128","R32","101","0.4554","0.4359"],["hard","Mid","R128","R16","101","0.2772","0.27"],["hard","Mid","R128","QF","101","0.0891","0.145"],["hard","Mid","R128","SF","101","0.0297","0.0785"],["hard","Mid","R128","F","101","0.0198","0.0429"],["hard","Mid","R128","Title","101","0.0099","0.0215"],["hard","Low","R32","R16","171","0.4737","0.4578"],["hard","Low","R32","QF","171","0.2573","0.2378"],["hard","Low","R32","SF","171","0.1053","0.1042"],["hard","Low","R32","F","171","0.0643","0.0479"],["hard","Low","R32","Title","171","0.0292","0.0218"],["hard","Low","R128","R64","189","0.5291","0.5276"],["hard","Low","R128","R32","189","0.1958","0.232"],["hard","Low","R128","R16","189","0.0794","0.1062"],["hard","Low","R128","QF","189","0.0265","0.0552"],["hard","Low","R128","SF","189","0.0","0.0242"],["hard","Low","R128","F","189","0.0","0.0111"],["hard","Low","R128","Title","189","0.0","0.0051"],["hard","Unrated","R32","R16","251","0.4104","0.3762"],["hard","Unrated","R32","QF","251","0.1315","0.1265"],["hard","Unrated","R32","SF","251","0.0319","0.0393"],["hard","Unrated","R32","F","251","0.004","0.0124"],["hard","Unrated","R32","Title","251","0.0","0.0056"],["hard","Unrated","R128","R64","241","0.3651","0.3705"],["hard","Unrated","R128","R32","241","0.0913","0.1077"],["hard","Unrated","R128","R16","241","0.0083","0.0405"],["hard","Unrated","R128","QF","241","0.0","0.0136"],["hard","Unrated","R128","SF","241","0.0","0.0042"],["hard","Unrated","R128","F","241","0.0","0.0013"],["hard","Unrated","R128","Title","241","0.0","0.0006"],["clay","High","R32","R16","49","0.7959","0.68"],["clay","High","R32","QF","49","0.4898","0.3933"],["clay","High","R32","SF","49","0.2449","0.1851"],["clay","High","R32","F","49","0.1429","0.1049"],["clay","High","R32","Title","49","0.102","0.062"],["clay","High","R128","R64","41","0.7317","0.6863"],["clay","High","R128","R32","41","0.4146","0.4173"],["clay","High","R128","R16","41","0.2195","0.2838"],["clay","High","R128","QF","41","0.0976","0.1641"],["clay","High","R128","SF","41","0.0244","0.0772"],["clay","High","R128","F","41","0.0244","0.0438"],["clay","High","R128","Title","41","0.0244","0.0259"],["clay","Mid","R32","R16","106","0.6509","0.5939"],["clay","Mid","R32","QF","106","0.3396","0.3253"],["clay","Mid","R32","SF","106","0.1792","0.1934"],["clay","Mid","R32","F","106","0.0943","0.0947"],["clay","Mid","R32","Title","106","0.0377","0.0425"],["clay","Mid","R128","R64","70","0.6143","0.6"],["clay","Mid","R128","R32","70","0.3571","0.3484"],["clay","Mid","R128","R16","70","0.1857","0.2069"],["clay","Mid","R128","QF","70","0.0857","0.1133"],["clay","Mid","R128","SF","70","0.0571","0.0674"],["clay","Mid","R128","F","70","0.0143","0.033"],["clay","Mid","R128","Title","70","0.0","0.0148"],["clay","Low","R32","R16","98","0.5816","0.5385"],["clay","Low","R32","QF","98","0.3469","0.2914"],["clay","Low","R32","SF","98","0.1224","0.12"],["clay","Low","R32","F","98","0.0612","0.0554"],["clay","Low","R32","Title","98","0.0204","0.0261"],["clay","Low","R128","R64","66","0.4545","0.4605"],["clay","Low","R128","R32","66","0.1212","0.1901"],["clay","Low","R128","R16","66","0.0152","0.1023"],["clay","Low","R128","QF","66","0.0","0.0554"],["clay","Low","R128","SF","66","0.0","0.0228"],["clay","Low","R128","F","66","0.0","0.0105"],["clay","Low","R128","Title","66","0.0","0.005"],["clay","Unrated","R32","R16","147","0.2517","0.2667"],["clay","Unrated","R32","QF","147","0.0272","0.048"],["clay","Unrated","R32","SF","147","0.0068","0.0206"],["clay","Unrated","R32","F","147","0.0","0.0094"],["clay","Unrated","R32","Title","147","0.0","0.0047"],["clay","Unrated","R128","R64","79","0.3165","0.3371"],["clay","Unrated","R128","R32","79","0.0759","0.0953"],["clay","Unrated","R128","R16","79","0.0253","0.0254"],["clay","Unrated","R128","QF","79","0.0","0.0046"],["clay","Unrated","R128","SF","79","0.0","0.002"],["clay","Unrated","R128","F","79","0.0","0.0009"],["clay","Unrated","R128","Title","79","0.0","0.0004"],["grass","High","R32","R16","37","0.6216","0.5938"],["grass","High","R32","QF","37","0.3514","0.3464"],["grass","High","R32","SF","37","0.1892","0.2099"],["grass","High","R32","F","37","0.0811","0.1092"],["grass","High","R32","Title","37","0.027","0.0546"],["grass","High","R128","R64","30","0.9","0.8"],["grass","High","R128","R32","30","0.5667","0.4757"],["grass","High","R128","R16","30","0.3333","0.2824"],["grass","High","R128","QF","30","0.1667","0.1648"],["grass","High","R128","SF","30","0.1","0.0998"],["grass","High","R128","F","30","0.0667","0.0519"],["grass","High","R128","Title","30","0.0333","0.026"],["grass","Mid","R32","R16","57","0.5614","0.5256"],["grass","Mid","R32","QF","57","0.2807","0.2628"],["grass","Mid","R32","SF","57","0.1053","0.1139"],["grass","Mid","R32","F","57","0.0526","0.0506"],["grass","Mid","R32","Title","57","0.0175","0.0234"],["grass","Mid","R128","R64","43","0.4884","0.4906"],["grass","Mid","R128","R32","43","0.2558","0.2532"],["grass","Mid","R128","R16","43","0.093","0.1331"],["grass","Mid","R128","QF","43","0.0465","0.0665"],["grass","Mid","R128","SF","43","0.0233","0.0288"],["grass","Mid","R128","F","43","0.0","0.0128"],["grass","Mid","R128","Title","43","0.0","0.0059"],["grass","Low","R32","R16","33","0.3939","0.4255"],["grass","Low","R32","QF","33","0.0909","0.1576"],["grass","Low","R32","SF","33","0.0303","0.063"],["grass","Low","R32","F","33","0.0303","0.0344"],["grass","Low","R32","Title","33","0.0303","0.0188"],["grass","Low","R128","R64","38","0.4211","0.4375"],["grass","Low","R128","R32","38","0.1053","0.1514"],["grass","Low","R128","R16","38","0.0526","0.0644"],["grass","Low","R128","QF","38","0.0263","0.0239"],["grass","Low","R128","SF","38","0.0","0.0095"],["grass","Low","R128","F","38","0.0","0.0052"],["grass","Low","R128","Title","38","0.0","0.0028"],["grass","Unrated","R32","R16","9","0.0","0.2632"],["grass","Unrated","R32","QF","9","0.0","0.1196"],["grass","Unrated","R32","SF","9","0.0","0.0598"],["grass","Unrated","R32","F","9","0.0","0.0299"],["grass","Unrated","R32","Title","9","0.0","0.015"],["grass","Unrated","R128","R64","17","0.0","0.1852"],["grass","Unrated","R128","R32","17","0.0","0.0926"],["grass","Unrated","R128","R16","17","0.0","0.0244"],["grass","Unrated","R128","QF","17","0.0","0.0111"],["grass","Unrated","R128","SF","17","0.0","0.0055"],["grass","Unrated","R128","F","17","0.0","0.0028"],["grass","Unrated","R128","Title","17","0.0","0.0014"]]},"round_matrix":{"columns":["surface","tier","from","R128","R64","R32","R16","QF","SF","F","W","Out"],"rows":[["all","High","R128","0.0","0.7094","0.0","0.0","0.0","0.0","0.0","0.0","0.2906"],["all","High","R64","0.0","0.0","0.6684","0.0","0.0","0.0","0.0","0.0","0.3316"],["all","High","R32","0.0","0.0","0.0","0.6578","0.0","0.0","0.0","0.0","0.3422"],["all","High","R16","0.0","0.0","0.0","0.0","0.6225","0.0","0.0","0.0","0.3775"],["all","High","QF","0.0","0.0","0.0","0.0","0.0","0.6165","0.0","0.0","0.3835"],["all","High","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.5862","0.0","0.4138"],["all","High","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5714","0.4286"],["all","High","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["all","High","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["all","Mid","R128","0.0","0.5926","0.0","0.0","0.0","0.0","0.0","0.0","0.4074"],["all","Mid","R64","0.0","0.0","0.6009","0.0","0.0","0.0","0.0","0.0","0.3991"],["all","Mid","R32","0.0","0.0","0.0","0.5827","0.0","0.0","0.0","0.0","0.4173"],["all","Mid","R16","0.0","0.0","0.0","0.0","0.5115","0.0","0.0","0.0","0.4885"],["all","Mid","QF","0.0","0.0","0.0","0.0","0.0","0.5435","0.0","0.0","0.4565"],["all","Mid","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.4815","0.0","0.5185"],["all","Mid","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.4048","0.5952"],["all","Mid","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["all","Mid","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["all","Low","R128","0.0","0.5326","0.0","0.0","0.0","0.0","0.0","0.0","0.4674"],["all","Low","R64","0.0","0.0","0.4592","0.0","0.0","0.0","0.0","0.0","0.5408"],["all","Low","R32","0.0","0.0","0.0","0.4963","0.0","0.0","0.0","0.0","0.5037"],["all","Low","R16","0.0","0.0","0.0","0.0","0.5485","0.0","0.0","0.0","0.4515"],["all","Low","QF","0.0","0.0","0.0","0.0","0.0","0.4338","0.0","0.0","0.5662"],["all","Low","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.5","0.0","0.5"],["all","Low","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5405","0.4595"],["all","Low","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["all","Low","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["all","Unrated","R128","0.0","0.378","0.0","0.0","0.0","0.0","0.0","0.0","0.622"],["all","Unrated","R64","0.0","0.0","0.2928","0.0","0.0","0.0","0.0","0.0","0.7072"],["all","Unrated","R32","0.0","0.0","0.0","0.3765","0.0","0.0","0.0","0.0","0.6235"],["all","Unrated","R16","0.0","0.0","0.0","0.0","0.326","0.0","0.0","0.0","0.674"],["all","Unrated","QF","0.0","0.0","0.0","0.0","0.0","0.3418","0.0","0.0","0.6582"],["all","Unrated","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.3125","0.0","0.6875"],["all","Unrated","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.4","0.6"],["all","Unrated","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["all","Unrated","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["hard","High","R128","0.0","0.6727","0.0","0.0","0.0","0.0","0.0","0.0","0.3273"],["hard","High","R64","0.0","0.0","0.6146","0.0","0.0","0.0","0.0","0.0","0.3854"],["hard","High","R32","0.0","0.0","0.0","0.629","0.0","0.0","0.0","0.0","0.371"],["hard","High","R16","0.0","0.0","0.0","0.0","0.6087","0.0","0.0","0.0","0.3913"],["hard","High","QF","0.0","0.0","0.0","0.0","0.0","0.6393","0.0","0.0","0.3607"],["hard","High","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.5455","0.0","0.4545"],["hard","High","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5517","0.4483"],["hard","High","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["hard","High","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["hard","Mid","R128","0.0","0.6577","0.0","0.0","0.0","0.0","0.0","0.0","0.3423"],["hard","Mid","R64","0.0","0.0","0.6629","0.0","0.0","0.0","0.0","0.0","0.3371"],["hard","Mid","R32","0.0","0.0","0.0","0.6194","0.0","0.0","0.0","0.0","0.3806"],["hard","Mid","R16","0.0","0.0","0.0","0.0","0.5368","0.0","0.0","0.0","0.4632"],["hard","Mid","QF","0.0","0.0","0.0","0.0","0.0","0.5413","0.0","0.0","0.4587"],["hard","Mid","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.5469","0.0","0.4531"],["hard","Mid","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5","0.5"],["hard","Mid","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["hard","Mid","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["hard","Low","R128","0.0","0.5276","0.0","0.0","0.0","0.0","0.0","0.0","0.4724"],["hard","Low","R64","0.0","0.0","0.4398","0.0","0.0","0.0","0.0","0.0","0.5602"],["hard","Low","R32","0.0","0.0","0.0","0.4578","0.0","0.0","0.0","0.0","0.5422"],["hard","Low","R16","0.0","0.0","0.0","0.0","0.5194","0.0","0.0","0.0","0.4806"],["hard","Low","QF","0.0","0.0","0.0","0.0","0.0","0.4384","0.0","0.0","0.5616"],["hard","Low","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.4595","0.0","0.5405"],["hard","Low","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.4545","0.5455"],["hard","Low","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["hard","Low","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["hard","Unrated","R128","0.0","0.3705","0.0","0.0","0.0","0.0","0.0","0.0","0.6295"],["hard","Unrated","R64","0.0","0.0","0.2908","0.0","0.0","0.0","0.0","0.0","0.7092"],["hard","Unrated","R32","0.0","0.0","0.0","0.3762","0.0","0.0","0.0","0.0","0.6238"],["hard","Unrated","R16","0.0","0.0","0.0","0.0","0.3361","0.0","0.0","0.0","0.6639"],["hard","Unrated","QF","0.0","0.0","0.0","0.0","0.0","0.3111","0.0","0.0","0.6889"],["hard","Unrated","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.3158","0.0","0.6842"],["hard","Unrated","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.4545","0.5455"],["hard","Unrated","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["hard","Unrated","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["clay","High","R128","0.0","0.6863","0.0","0.0","0.0","0.0","0.0","0.0","0.3137"],["clay","High","R64","0.0","0.0","0.6081","0.0","0.0","0.0","0.0","0.0","0.3919"],["clay","High","R32","0.0","0.0","0.0","0.68","0.0","0.0","0.0","0.0","0.32"],["clay","High","R16","0.0","0.0","0.0","0.0","0.5783","0.0","0.0","0.0","0.4217"],["clay","High","QF","0.0","0.0","0.0","0.0","0.0","0.4706","0.0","0.0","0.5294"],["clay","High","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.5667","0.0","0.4333"],["clay","High","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5909","0.4091"],["clay","High","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["clay","High","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["clay","Mid","R128","0.0","0.6","0.0","0.0","0.0","0.0","0.0","0.0","0.4"],["clay","Mid","R64","0.0","0.0","0.5806","0.0","0.0","0.0","0.0","0.0","0.4194"],["clay","Mid","R32","0.0","0.0","0.0","0.5939","0.0","0.0","0.0","0.0","0.4061"],["clay","Mid","R16","0.0","0.0","0.0","0.0","0.5476","0.0","0.0","0.0","0.4524"],["clay","Mid","QF","0.0","0.0","0.0","0.0","0.0","0.5946","0.0","0.0","0.4054"],["clay","Mid","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.4898","0.0","0.5102"],["clay","Mid","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.4483","0.5517"],["clay","Mid","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["clay","Mid","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["clay","Low","R128","0.0","0.4605","0.0","0.0","0.0","0.0","0.0","0.0","0.5395"],["clay","Low","R64","0.0","0.0","0.4127","0.0","0.0","0.0","0.0","0.0","0.5873"],["clay","Low","R32","0.0","0.0","0.0","0.5385","0.0","0.0","0.0","0.0","0.4615"],["clay","Low","R16","0.0","0.0","0.0","0.0","0.5412","0.0","0.0","0.0","0.4588"],["clay","Low","QF","0.0","0.0","0.0","0.0","0.0","0.4118","0.0","0.0","0.5882"],["clay","Low","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.4615","0.0","0.5385"],["clay","Low","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.4706","0.5294"],["clay","Low","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["clay","Low","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["clay","Unrated","R128","0.0","0.3371","0.0","0.0","0.0","0.0","0.0","0.0","0.6629"],["clay","Unrated","R64","0.0","0.0","0.2826","0.0","0.0","0.0","0.0","0.0","0.7174"],["clay","Unrated","R32","0.0","0.0","0.0","0.2667","0.0","0.0","0.0","0.0","0.7333"],["clay","Unrated","R16","0.0","0.0","0.0","0.0","0.18","0.0","0.0","0.0","0.82"],["clay","Unrated","QF","0.0","0.0","0.0","0.0","0.0","0.4286","0.0","0.0","0.5714"],["clay","Unrated","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.4545","0.0","0.5455"],["clay","Unrated","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5","0.5"],["clay","Unrated","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["clay","Unrated","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["grass","High","R128","0.0","0.8","0.0","0.0","0.0","0.0","0.0","0.0","0.2"],["grass","High","R64","0.0","0.0","0.5946","0.0","0.0","0.0","0.0","0.0","0.4054"],["grass","High","R32","0.0","0.0","0.0","0.5938","0.0","0.0","0.0","0.0","0.4062"],["grass","High","R16","0.0","0.0","0.0","0.0","0.5833","0.0","0.0","0.0","0.4167"],["grass","High","QF","0.0","0.0","0.0","0.0","0.0","0.6061","0.0","0.0","0.3939"],["grass","High","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.52","0.0","0.48"],["grass","High","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5","0.5"],["grass","High","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["grass","High","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["grass","Mid","R128","0.0","0.4906","0.0","0.0","0.0","0.0","0.0","0.0","0.5094"],["grass","Mid","R64","0.0","0.0","0.5161","0.0","0.0","0.0","0.0","0.0","0.4839"],["grass","Mid","R32","0.0","0.0","0.0","0.5256","0.0","0.0","0.0","0.0","0.4744"],["grass","Mid","R16","0.0","0.0","0.0","0.0","0.5","0.0","0.0","0.0","0.5"],["grass","Mid","QF","0.0","0.0","0.0","0.0","0.0","0.4333","0.0","0.0","0.5667"],["grass","Mid","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.4444","0.0","0.5556"],["grass","Mid","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.4615","0.5385"],["grass","Mid","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["grass","Mid","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["grass","Low","R128","0.0","0.4375","0.0","0.0","0.0","0.0","0.0","0.0","0.5625"],["grass","Low","R64","0.0","0.0","0.3462","0.0","0.0","0.0","0.0","0.0","0.6538"],["grass","Low","R32","0.0","0.0","0.0","0.4255","0.0","0.0","0.0","0.0","0.5745"],["grass","Low","R16","0.0","0.0","0.0","0.0","0.3704","0.0","0.0","0.0","0.6296"],["grass","Low","QF","0.0","0.0","0.0","0.0","0.0","0.4","0.0","0.0","0.6"],["grass","Low","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.5455","0.0","0.4545"],["grass","Low","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5455","0.4545"],["grass","Low","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["grass","Low","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"],["grass","Unrated","R128","0.0","0.1852","0.0","0.0","0.0","0.0","0.0","0.0","0.8148"],["grass","Unrated","R64","0.0","0.0","0.5","0.0","0.0","0.0","0.0","0.0","0.5"],["grass","Unrated","R32","0.0","0.0","0.0","0.2632","0.0","0.0","0.0","0.0","0.7368"],["grass","Unrated","R16","0.0","0.0","0.0","0.0","0.4545","0.0","0.0","0.0","0.5455"],["grass","Unrated","QF","0.0","0.0","0.0","0.0","0.0","0.5","0.0","0.0","0.5"],["grass","Unrated","SF","0.0","0.0","0.0","0.0","0.0","0.0","0.5","0.0","0.5"],["grass","Unrated","F","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.5","0.5"],["grass","Unrated","W","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0","0.0"],["grass","Unrated","Out","0.0","0.0","0.0","0.0","0.0","0.0","0.0","0.0","1.0"]]}}}</script>
+<script>
+const TIERS = ['High', 'Mid', 'Low'];
+const O_TIERS = [...TIERS, 'Unrated'];
+const ROUNDS = ['R128', 'R64', 'R32', 'R16', 'QF', 'SF', 'F'];
+const STATES = [...ROUNDS, 'W', 'Out'];
+const ROUND_NAMES = {R128: 'Round of 128', R64: 'Round of 64', R32: 'Round of 32', R16: 'Round of 16', QF: 'Quarterfinal', SF: 'Semifinal', F: 'Final', Title: 'Title'};
+const SURFACES = {all: 'all surfaces', hard: 'hard courts', clay: 'clay', grass: 'grass'};
+const NUM = ['strength_score', 'serve_rating', 'first_serve_pct', 'first_serve_pts_won_pct', 'second_serve_pts_won_pct', 'service_games_won_pct', 'aces_per_match', 'df_per_match'];
+const COLS = ['player', 'country', 'tier', ...NUM];
+const SECONDARY = new Set(['country', 'first_serve_pct', 'first_serve_pts_won_pct', 'second_serve_pts_won_pct', 'df_per_match']);
+const tierColor = (t) => 'var(--tier-' + t.toLowerCase() + ')';
+// fixed decimals with a true minus sign, like d3.format
+const fmt = (v, p) => (v < 0 && Math.abs(v) >= 0.5 * 10 ** -p ? '−' : '') + Math.abs(v).toFixed(p);
+const f1 = (v) => fmt(v, 1);
+const f2 = (v) => fmt(v, 2);
+const pct = (v) => fmt(v * 100, 1) + '%';
+const int = (v) => Number(v).toLocaleString('en-US');
+
+const DATA = JSON.parse(document.getElementById('dash-data').textContent);
+const table = (name) => {
+  const t = DATA.tables[name];
+  return t.rows.map((r) => Object.fromEntries(t.columns.map((c, i) => [c, r[i]])));
+};
+const ALL = table('serve_tiers');
+const WIN = table('round_win');
+const REACH = table('round_reach');
+const CHECK = table('round_check');
+const MATRIX = table('round_matrix');
+const PROFILE = tierProfile(ALL);
+// matches behind each surface model: matches played summed over tiers and rounds, halved since every match has two players
+const MATCHES = {};
+for (const r of WIN) MATCHES[r.surface] = (MATCHES[r.surface] || 0) + Number(r.played) / 2;
+document.getElementById('as-of').textContent = new Date(DATA.as_of + 'T12:00:00Z')
+  .toLocaleDateString('en-GB', {day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC'});
+
+let surface = 'all';
+let sortKey = 'strength_score';
+let sortDir = -1;
+let entry = 'R32';
+let matrixTier = 'High';
+let currentRows = [];
+let chartWidth = 0;
+
+const tabs = [...document.querySelectorAll('.st-tab')];
+tabs.forEach((b) => b.addEventListener('click', () => {
+  surface = b.dataset.surface;
+  history.replaceState(null, '', '#' + b.id);
+  draw();
+}));
+const named = /^surface-(all|hard|clay|grass)$/.exec(location.hash.slice(1));
+if (named) surface = named[1];
+
+const search = document.getElementById('player-search');
+search.addEventListener('input', () => drawTable(currentRows));
+document.querySelectorAll('.st-th').forEach((b) => b.addEventListener('click', () => {
+  const k = b.dataset.k;
+  if (sortKey === k) sortDir = -sortDir;
+  else { sortKey = k; sortDir = NUM.includes(k) ? -1 : 1; }
+  drawTable(currentRows);
+}));
+document.querySelectorAll('[data-entry]').forEach((b) => b.addEventListener('click', () => {
+  entry = b.dataset.entry;
+  drawOdds();
+}));
+document.querySelectorAll('[data-mtier]').forEach((b) => b.addEventListener('click', () => {
+  matrixTier = b.dataset.mtier;
+  drawOdds();
+}));
+
+// players in each tier and the mean of key serve stats, by surface
+function tierProfile(rows) {
+  const groups = {};
+  for (const d of rows) (groups[d.surface + '|' + d.tier] ||= []).push(d);
+  const mean = (v, k) => v.reduce((s, d) => s + Number(d[k]), 0) / v.length;
+  return Object.values(groups).map((v) => ({
+    surface: v[0].surface,
+    tier: v[0].tier,
+    n: v.length,
+    serve_rating: mean(v, 'serve_rating'),
+    aces_per_match: mean(v, 'aces_per_match'),
+    service_games_won_pct: mean(v, 'service_games_won_pct'),
+  }));
+}
+
+function measure(svg, text) {
+  const t = svg.append('text').text(text);
+  const w = t.node().getComputedTextLength();
+  t.remove();
+  return w;
+}
+
+function el(tag, cls, text) {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+}
+
+function swatch(t) {
+  const sw = el('i', 'st-sw');
+  sw.style.background = tierColor(t);
+  return sw;
+}
+
+function rowHead(t) {
+  const th = el('th', 'st-rowhead');
+  th.scope = 'row';
+  const name = el('span', 'st-rowname');
+  name.append(swatch(t), t);
+  th.appendChild(name);
+  return th;
+}
+
+function tooltip(box) {
+  let tip = box.querySelector('.st-tip');
+  if (!tip) { tip = el('div', 'st-tip'); tip.hidden = true; box.appendChild(tip); }
+  return {
+    // lines: a muted heading, a bold name, then detail lines
+    show(x, y, lines) {
+      const head = el('div');
+      head.appendChild(el('b', null, lines[1]));
+      tip.replaceChildren(el('div', 'st-tip-sub', lines[0]), head, ...lines.slice(2).map((l) => el('div', null, l)));
+      tip.hidden = false;
+      const w = tip.offsetWidth, h = tip.offsetHeight;
+      let left = x + 14, top = y - h - 10;
+      if (left + w > box.clientWidth) left = x - w - 14;
+      if (left < 0) left = 0;
+      if (top < 0) top = y + 14;
+      tip.style.left = left + 'px';
+      tip.style.top = top + 'px';
+    },
+    hide() { tip.hidden = true; },
+  };
+}
+
+// hovering anywhere on the plot picks the nearest dot, so small dots are easy to hit
+function hover(svg, box, pts, r, lines) {
+  if (!pts.length) return;
+  const delaunay = d3.Delaunay.from(pts, (p) => p.x, (p) => p.y);
+  const ring = svg.append('circle').attr('r', r + 3).attr('fill', 'none').attr('pointer-events', 'none')
+    .style('stroke', 'var(--fg)').attr('stroke-width', 1.5).attr('visibility', 'hidden');
+  const tip = tooltip(box);
+  const off = () => { ring.attr('visibility', 'hidden'); tip.hide(); };
+  svg.on('mousemove', (event) => {
+    const [mx, my] = d3.pointer(event);
+    const p = pts[delaunay.find(mx, my)];
+    if (!p || Math.hypot(p.x - mx, p.y - my) > 24) { off(); return; }
+    ring.attr('cx', p.x).attr('cy', p.y).attr('visibility', 'visible');
+    tip.show(p.x, p.y, lines(p.d));
+  }).on('mouseleave', off);
+}
+
+const playerTip = (d) => [d.tier + ' tier · ' + d.country, d.player,
+  'Strength ' + f2(d.strength_score) + ' · rating ' + f1(d.serve_rating),
+  f1(d.aces_per_match) + ' aces · ' + f1(d.service_games_won_pct) + '% svc games won'];
+
+function drawLegends() {
+  document.querySelectorAll('.st-legend').forEach((lg) => {
+    const tiers = lg.classList.contains('st-olegend') ? O_TIERS : TIERS;
+    lg.replaceChildren(...tiers.map((t) => {
+      const s = el('span');
+      s.append(swatch(t), t);
+      return s;
+    }));
+  });
+}
+
+function drawTakeaway() {
+  const p = document.getElementById('takeaway');
+  const get = (t) => PROFILE.find((d) => d.surface === surface && d.tier === t);
+  const hi = get('High'), lo = get('Low');
+  if (!hi || !lo) { p.textContent = '—'; return; }
+  p.replaceChildren(
+    'On ' + SURFACES[surface] + ', ',
+    el('b', null, String(hi.n)),
+    ' players make the High tier, with an average serve rating of ',
+    el('b', null, f1(hi.serve_rating)),
+    ' against ',
+    el('b', null, f1(lo.serve_rating)),
+    ' for the ',
+    el('b', null, String(lo.n)),
+    ' in the Low tier.');
+}
+
+function drawTierCards() {
+  document.querySelectorAll('.st-tiercard').forEach((card) => {
+    const t = card.dataset.tier;
+    const d = PROFILE.find((r) => r.surface === surface && r.tier === t);
+    const name = el('div', 'st-tier-name');
+    name.append(swatch(t), t + ' tier');
+    const big = el('div', 'st-big', d ? String(d.n) : '—');
+    big.append(el('small', null, 'players'));
+    const dl = el('dl', 'st-stats');
+    [['Serve rating', 'serve_rating', ''], ['Aces / match', 'aces_per_match', ''], ['Svc games won', 'service_games_won_pct', '%']].forEach(([label, k, unit]) => {
+      const div = el('div');
+      div.append(el('dt', null, label), el('dd', null, (d ? f1(d[k]) : '—') + unit));
+      dl.appendChild(div);
+    });
+    card.replaceChildren(name, big, dl);
+  });
+}
+
+function drawStrength(rows) {
+  const box = document.getElementById('strength-chart');
+  d3.select(box).selectAll('svg').remove();
+  const width = box.clientWidth;
+  if (!width) return;
+  const r = width < 500 ? 4 : 4.5;
+  const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%');
+  const labelW = d3.max(TIERS, (t) => measure(svg, t)) + 12;
+  const m = {top: 8, right: 12, bottom: 28, left: labelW};
+  const ext = d3.extent(rows, (d) => d.strength_score);
+  const pad = (ext[1] - ext[0]) * 0.04 || 0.1;
+  const x = d3.scaleLinear([ext[0] - pad, ext[1] + pad], [m.left, width - m.right]);
+
+  // dodge: place each dot at the nearest free vertical offset in its band
+  const placed = {};
+  let maxOff = 0;
+  for (const t of TIERS) {
+    const pts = rows.filter((d) => d.tier === t).sort((a, b) => a.strength_score - b.strength_score);
+    const done = [];
+    for (const d of pts) {
+      const px = x(d.strength_score);
+      let off = 0;
+      for (let k = 0; k < 60; k++) {
+        const cand = k === 0 ? 0 : (k % 2 ? 1 : -1) * Math.ceil(k / 2) * r * 1.1;
+        if (done.every((q) => Math.hypot(q.px - px, q.off - cand) >= 2 * r + 0.5)) { off = cand; break; }
+      }
+      done.push({px, off});
+      maxOff = Math.max(maxOff, Math.abs(off));
+      placed[d.player_id] = off;
+    }
+  }
+  const band = Math.max(56, 2 * maxOff + 2 * r + 14);
+  const height = m.top + band * 3 + m.bottom;
+  svg.attr('viewBox', `0 0 ${width} ${height}`).attr('height', height)
+    .attr('role', 'img').attr('aria-label', 'Strip chart of serve-strength score by tier');
+  box.style.minHeight = height + 'px';
+  const yc = (t) => m.top + band * TIERS.indexOf(t) + band / 2;
+  svg.append('rect').attr('width', width).attr('height', height).attr('fill', 'none').attr('pointer-events', 'all');
+
+  const ticks = x.ticks(Math.max(2, Math.floor(width / 90)));
+  svg.append('g').selectAll('line').data(ticks).join('line')
+    .attr('x1', (d) => x(d)).attr('x2', (d) => x(d)).attr('y1', m.top).attr('y2', height - m.bottom)
+    .style('stroke', 'var(--grid)').attr('stroke-width', 1);
+  svg.append('g').selectAll('line').data(TIERS.slice(1)).join('line')
+    .attr('x1', m.left).attr('x2', width - m.right)
+    .attr('y1', (t) => m.top + band * TIERS.indexOf(t)).attr('y2', (t) => m.top + band * TIERS.indexOf(t))
+    .style('stroke', 'var(--grid)');
+
+  // boundaries between neighbouring tiers
+  const bounds = [];
+  for (let i = 0; i < TIERS.length - 1; i++) {
+    const upper = rows.filter((d) => d.tier === TIERS[i]);
+    const lower = rows.filter((d) => d.tier === TIERS[i + 1]);
+    if (upper.length && lower.length) bounds.push((d3.min(upper, (d) => d.strength_score) + d3.max(lower, (d) => d.strength_score)) / 2);
+  }
+  svg.append('g').selectAll('line').data(bounds).join('line')
+    .attr('x1', (d) => x(d)).attr('x2', (d) => x(d)).attr('y1', m.top).attr('y2', height - m.bottom)
+    .style('stroke', 'var(--ref)').attr('stroke-dasharray', '4 4').attr('stroke-width', 1.5);
+
+  svg.append('g').selectAll('text').data(TIERS).join('text').attr('class', 'st-tierlabel')
+    .attr('x', 0).attr('y', (t) => yc(t)).attr('dy', '0.35em').text((t) => t);
+
+  const ax = svg.append('g').attr('transform', `translate(0,${height - m.bottom})`)
+    .call(d3.axisBottom(x).tickValues(ticks).tickFormat(d3.format('.1f')).tickSizeOuter(0))
+    .attr('font-size', null).attr('font-family', null);
+  ax.select('.domain').style('stroke', 'var(--axis)');
+  ax.selectAll('.tick line').style('stroke', 'var(--axis)');
+
+  const pts = rows.map((d) => ({x: x(d.strength_score), y: yc(d.tier) + placed[d.player_id], d}));
+  svg.append('g').selectAll('circle').data(pts).join('circle')
+    .attr('cx', (p) => p.x).attr('cy', (p) => p.y).attr('r', r)
+    .style('fill', (p) => tierColor(p.d.tier)).style('fill-opacity', 0.9)
+    .style('stroke', 'var(--panel)').attr('stroke-width', 1.5);
+  hover(svg, box, pts, r, playerTip);
+}
+
+function drawScatter(rows) {
+  const box = document.getElementById('scatter-chart');
+  d3.select(box).selectAll('svg').remove();
+  const width = box.clientWidth;
+  if (!width) return;
+  const height = 320;
+  const r = width < 500 ? 4 : 4.5;
+  box.style.minHeight = height + 'px';
+  const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%')
+    .attr('viewBox', `0 0 ${width} ${height}`).attr('height', height)
+    .attr('role', 'img').attr('aria-label', 'Scatter of aces per match against service games won');
+  svg.append('rect').attr('width', width).attr('height', height).attr('fill', 'none').attr('pointer-events', 'all');
+  const yExt = d3.extent(rows, (d) => d.service_games_won_pct);
+  const y0 = d3.scaleLinear([yExt[0] - 2, Math.min(100, yExt[1] + 2)], [0, 1]).nice();
+  const yTicks = y0.ticks(6);
+  const left = d3.max(yTicks, (t) => measure(svg, t + '%')) + 10;
+  const m = {top: 22, right: 14, bottom: 40, left};
+  const xExt = d3.extent(rows, (d) => d.aces_per_match);
+  const x = d3.scaleLinear([0, xExt[1] * 1.05], [m.left, width - m.right]).nice();
+  const y = d3.scaleLinear(y0.domain(), [height - m.bottom, m.top]);
+  const xTicks = x.ticks(Math.max(2, Math.floor(width / 80)));
+
+  svg.append('g').selectAll('line').data(yTicks).join('line')
+    .attr('x1', m.left).attr('x2', width - m.right).attr('y1', (d) => y(d)).attr('y2', (d) => y(d))
+    .style('stroke', 'var(--grid)');
+  const ay = svg.append('g').attr('transform', `translate(${m.left},0)`)
+    .call(d3.axisLeft(y).tickValues(yTicks).tickFormat((d) => d + '%').tickSize(0).tickPadding(8))
+    .attr('font-size', null).attr('font-family', null);
+  ay.select('.domain').remove();
+  const ax = svg.append('g').attr('transform', `translate(0,${height - m.bottom})`)
+    .call(d3.axisBottom(x).tickValues(xTicks).tickSizeOuter(0))
+    .attr('font-size', null).attr('font-family', null);
+  ax.select('.domain').style('stroke', 'var(--axis)');
+  ax.selectAll('.tick line').style('stroke', 'var(--axis)');
+  svg.append('text').attr('x', width - m.right).attr('y', height - 4).attr('text-anchor', 'end').text('Aces per match');
+  svg.append('text').attr('x', 0).attr('y', 10).text('Service games won');
+
+  // High drawn last so it sits on top
+  const pts = [...rows].sort((a, b) => TIERS.indexOf(b.tier) - TIERS.indexOf(a.tier))
+    .map((d) => ({x: x(d.aces_per_match), y: y(d.service_games_won_pct), d}));
+  svg.append('g').selectAll('circle').data(pts).join('circle')
+    .attr('cx', (p) => p.x).attr('cy', (p) => p.y).attr('r', r)
+    .style('fill', (p) => tierColor(p.d.tier)).style('fill-opacity', 0.9)
+    .style('stroke', 'var(--panel)').attr('stroke-width', 1.5);
+  hover(svg, box, pts, r, playerTip);
+}
+
+function drawReach() {
+  const box = document.getElementById('reach-chart');
+  d3.select(box).selectAll('svg').remove();
+  const width = box.clientWidth;
+  if (!width) return;
+  const targets = [...ROUNDS.slice(ROUNDS.indexOf(entry) + 1), 'Title'];
+  const rows = REACH
+    .filter((d) => d.surface === surface && d.start === entry && targets.includes(d.reach) && O_TIERS.includes(d.tier))
+    .map((d) => ({tier: d.tier, reach: d.reach, prob: Number(d.prob), lo: Number(d.ci90_low), hi: Number(d.ci90_high)}));
+  const svg = d3.select(box).insert('svg', ':first-child').attr('width', '100%');
+  const labelW = d3.max(targets, (t) => measure(svg, ROUND_NAMES[t])) + 14;
+  const m = {top: 4, right: 18, bottom: 30, left: labelW};
+  const step = 16;
+  const band = step * O_TIERS.length + 12;
+  const height = m.top + band * targets.length + m.bottom;
+  svg.attr('viewBox', `0 0 ${width} ${height}`).attr('height', height)
+    .attr('role', 'img').attr('aria-label', 'Chance of reaching each round, by serve tier');
+  box.style.minHeight = height + 'px';
+  svg.append('rect').attr('width', width).attr('height', height).attr('fill', 'none').attr('pointer-events', 'all');
+  const xmax = Math.min(1, (d3.max(rows, (d) => d.hi) || 0.5) * 1.08);
+  const x = d3.scaleSqrt([0, xmax], [m.left, width - m.right]);
+  const ticks = [];
+  for (const t of [0.01, 0.05, 0.1, 0.25, 0.5, 0.75, 1]) {
+    if (t <= xmax && (!ticks.length || x(t) - x(ticks[ticks.length - 1]) >= 44)) ticks.push(t);
+  }
+  const rowTop = (i) => m.top + band * i;
+
+  svg.append('g').selectAll('line').data(ticks).join('line')
+    .attr('x1', (d) => x(d)).attr('x2', (d) => x(d)).attr('y1', m.top).attr('y2', height - m.bottom)
+    .style('stroke', 'var(--grid)');
+  svg.append('g').selectAll('line').data(targets.slice(1)).join('line')
+    .attr('x1', 0).attr('x2', width - m.right)
+    .attr('y1', (d, i) => rowTop(i + 1)).attr('y2', (d, i) => rowTop(i + 1))
+    .style('stroke', 'var(--grid)');
+  svg.append('g').selectAll('text').data(targets).join('text').attr('class', 'st-tierlabel')
+    .attr('x', 0).attr('y', (d, i) => rowTop(i) + band / 2).attr('dy', '0.35em').text((d) => ROUND_NAMES[d]);
+  const ax = svg.append('g').attr('transform', `translate(0,${height - m.bottom})`)
+    .call(d3.axisBottom(x).tickValues(ticks).tickFormat(d3.format('.0%')).tickSizeOuter(0))
+    .attr('font-size', null).attr('font-family', null);
+  ax.select('.domain').style('stroke', 'var(--axis)');
+  ax.selectAll('.tick line').style('stroke', 'var(--axis)');
+
+  const y = (d) => rowTop(targets.indexOf(d.reach)) + 6 + step * O_TIERS.indexOf(d.tier) + step / 2;
+  const pts = rows.map((d) => ({x: x(d.prob), y: y(d), d}));
+  const g = svg.append('g');
+  g.selectAll('line').data(rows).join('line')
+    .attr('x1', (d) => x(d.lo)).attr('x2', (d) => x(d.hi)).attr('y1', y).attr('y2', y)
+    .style('stroke', (d) => tierColor(d.tier)).style('opacity', 0.55)
+    .attr('stroke-width', 2).attr('stroke-linecap', 'round');
+  g.selectAll('circle').data(pts).join('circle')
+    .attr('cx', (p) => p.x).attr('cy', (p) => p.y).attr('r', 4.5)
+    .style('fill', (p) => tierColor(p.d.tier)).style('stroke', 'var(--panel)').attr('stroke-width', 1.5);
+  hover(svg, box, pts, 4.5, (d) => [d.tier + ' tier', 'Reach ' + ROUND_NAMES[d.reach].toLowerCase() + ': ' + pct(d.prob),
+    '90% interval ' + pct(d.lo) + ' to ' + pct(d.hi)]);
+}
+
+function drawTable(rows) {
+  const tbody = document.querySelector('#player-table tbody');
+  const q = search.value.trim().toLowerCase();
+  const shown = rows
+    .filter((d) => !q || d.player.toLowerCase().includes(q) || d.country.toLowerCase().includes(q))
+    .sort((a, b) => {
+      const av = sortKey === 'tier' ? TIERS.indexOf(a.tier) : a[sortKey];
+      const bv = sortKey === 'tier' ? TIERS.indexOf(b.tier) : b[sortKey];
+      const dir = sortKey === 'tier' ? -sortDir : sortDir;
+      return (av < bv ? -1 : av > bv ? 1 : 0) * dir;
+    });
+  document.querySelectorAll('#player-table th').forEach((th) => {
+    const b = th.querySelector('.st-th');
+    const on = b.dataset.k === sortKey;
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
+    th.setAttribute('aria-sort', on ? (sortDir === 1 ? 'ascending' : 'descending') : 'none');
+  });
+  tbody.replaceChildren(...shown.map((d) => {
+    const tr = el('tr');
+    for (const k of COLS) {
+      const td = el('td', [SECONDARY.has(k) ? 'st-sec' : '', k === 'country' || k === 'tier' ? 'st-l' : ''].join(' ').trim() || null);
+      if (k === 'tier') {
+        const s = el('span', 'st-tiercell');
+        s.append(swatch(d.tier), d.tier);
+        td.appendChild(s);
+      } else {
+        td.textContent = d.raw[k];
+      }
+      tr.appendChild(td);
+    }
+    return tr;
+  }));
+  document.getElementById('player-count').textContent = shown.length + ' of ' + rows.length + ' players';
+}
+
+function drawOddsText() {
+  const n = MATCHES[surface];
+  document.getElementById('odds-note').textContent = n ? 'A Markov chain over draw rounds, fit to ' + int(n) +
+    ' main-draw singles matches on ' + SURFACES[surface] + ' from the same 52 weeks as the serve stats. Each round a player either wins and moves on or loses and is out.' : '';
+  const p = document.getElementById('odds-take');
+  const get = (tier, reach) => REACH.find((d) => d.surface === surface && d.tier === tier && d.start === entry && d.reach === reach);
+  const hq = get('High', 'QF'), ht = get('High', 'Title'), lq = get('Low', 'QF'), lt = get('Low', 'Title');
+  if (!hq || !ht || !lq || !lt) { p.textContent = '—'; return; }
+  const b = (row) => el('b', null, pct(Number(row.prob)));
+  p.replaceChildren('On ' + SURFACES[surface] + ', a High-tier server who enters at the ' + ROUND_NAMES[entry].toLowerCase() +
+    ' reaches the quarterfinals ', b(hq), ' of the time and wins the title ', b(ht),
+    ' of the time. For a Low-tier server those chances are ', b(lq), ' and ', b(lt), '.');
+}
+
+function drawWinProb() {
+  const rows = WIN.filter((d) => d.surface === surface);
+  const head = el('tr');
+  head.append(el('th', null, 'Tier'), ...ROUNDS.map((r) => el('th', null, r)));
+  const body = O_TIERS.map((t) => {
+    const tr = el('tr');
+    tr.appendChild(rowHead(t));
+    for (const r of ROUNDS) {
+      const d = rows.find((x) => x.tier === t && x.round === r);
+      const td = el('td');
+      if (d) {
+        const p = Number(d.p_win);
+        td.append(pct(p), el('small', null, int(d.played) + ' played'));
+        const strength = Math.max(0, Math.min(1, (p - 0.3) / 0.5));
+        td.style.background = `color-mix(in srgb, var(--heat) ${Math.round(strength * 45)}%, transparent)`;
+      } else {
+        td.textContent = '—';
+      }
+      tr.appendChild(td);
+    }
+    return tr;
+  });
+  const thead = el('thead');
+  thead.appendChild(head);
+  const tbody = el('tbody');
+  tbody.append(...body);
+  document.getElementById('winprob-table').replaceChildren(thead, tbody);
+}
+
+function drawMatrix() {
+  const rows = MATRIX.filter((d) => d.surface === surface && d.tier === matrixTier);
+  document.querySelector('#matrix-table tbody').replaceChildren(...STATES.map((from) => {
+    const d = rows.find((x) => x.from === from);
+    const tr = el('tr');
+    const th = el('th', 'st-rowhead', from);
+    th.scope = 'row';
+    tr.appendChild(th);
+    for (const to of STATES) {
+      const v = d ? Number(d[to]) : NaN;
+      const td = el('td', v === 0 ? 'st-zero' : null, !Number.isFinite(v) ? '—' : v === 0 ? '0' : pct(v));
+      if (v > 0) td.style.background = `color-mix(in srgb, ${tierColor(matrixTier)} ${Math.round(12 + v * 33)}%, transparent)`;
+      tr.appendChild(td);
+    }
+    return tr;
+  }));
+}
+
+function drawCheck() {
+  const targets = ['QF', 'F', 'Title'];
+  const rows = CHECK.filter((d) => d.surface === surface && d.start === entry);
+  const head = el('tr');
+  head.append(el('th', null, 'Tier'), el('th', null, 'Players'),
+    ...targets.map((t) => el('th', null, t === 'Title' ? 'Win title' : 'Reach ' + ROUND_NAMES[t].toLowerCase())));
+  const body = O_TIERS.map((t) => {
+    const tr = el('tr');
+    tr.appendChild(rowHead(t));
+    const first = rows.find((d) => d.tier === t && d.reach === targets[0]);
+    tr.appendChild(el('td', null, first ? int(first.entries) : '—'));
+    for (const r of targets) {
+      const d = rows.find((x) => x.tier === t && x.reach === r);
+      const td = el('td');
+      if (d) {
+        const pair = el('span', 'st-pair');
+        pair.append(el('span', null, pct(Number(d.model))), ' vs ',
+          el('span', 'st-actual', d.observed === '' ? '—' : pct(Number(d.observed))));
+        td.appendChild(pair);
+      } else {
+        td.textContent = '—';
+      }
+      tr.appendChild(td);
+    }
+    return tr;
+  });
+  const thead = el('thead');
+  thead.appendChild(head);
+  const tbody = el('tbody');
+  tbody.append(...body);
+  document.getElementById('check-table').replaceChildren(thead, tbody);
+}
+
+const CHARTS = {
+  'strength-chart': () => drawStrength(currentRows),
+  'scatter-chart': () => drawScatter(currentRows),
+  'reach-chart': drawReach,
+};
+
+function drawCharts(ids = Object.keys(CHARTS)) {
+  chartWidth = document.getElementById('strength-chart').clientWidth;
+  for (const id of ids) {
+    if (window.d3) CHARTS[id]();
+    else document.getElementById(id).replaceChildren(el('div', 'st-fail', "Charts couldn't load"));
+  }
+}
+
+function drawOdds() {
+  document.querySelectorAll('[data-entry]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.entry === entry ? 'true' : 'false'));
+  document.querySelectorAll('[data-mtier]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.mtier === matrixTier ? 'true' : 'false'));
+  drawOddsText();
+  drawWinProb();
+  drawMatrix();
+  drawCheck();
+  drawCharts(['reach-chart']);
+}
+
+function draw() {
+  tabs.forEach((b) => b.setAttribute('aria-selected', b.dataset.surface === surface ? 'true' : 'false'));
+  currentRows = ALL.filter((d) => d.surface === surface).map((d) => {
+    const o = {surface: d.surface, tier: d.tier, player_id: d.player_id, player: d.player, country: d.country, raw: d};
+    for (const k of NUM) o[k] = Number(d[k]);
+    return o;
+  });
+  drawTakeaway();
+  drawTierCards();
+  drawTable(currentRows);
+  drawCharts(['strength-chart', 'scatter-chart']);
+  drawOdds();
+}
+
+drawLegends();
+draw();
+// redraw the charts when their width changes (window resize, phone rotation)
+new ResizeObserver(() => {
+  if (document.getElementById('strength-chart').clientWidth !== chartWidth) drawCharts();
+}).observe(document.querySelector('.st-wrap'));
+</script>
+</body>
+</html>
