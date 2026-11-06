@@ -1,88 +1,4 @@
 event_key,tournament,category,surface,indoor,end_date,round,winner_id,winner,loser_id,loser,walkover,retired
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Finals -,S0AG,Jannik Sinner,AG37,Felix Auger-Aliassime,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Semi-Finals -,S0AG,Jannik Sinner,Z355,Alexander Zverev,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Semi-Finals -,AG37,Felix Auger-Aliassime,BK92,Alexander Bublik,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Quarter-Finals -,S0AG,Jannik Sinner,S0S1,Ben Shelton,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Quarter-Finals -,Z355,Alexander Zverev,MM58,Daniil Medvedev,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Quarter-Finals -,BK92,Alexander Bublik,DH58,Alex de Minaur,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Quarter-Finals -,AG37,Felix Auger-Aliassime,VA25,Valentin Vacherot,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,S0AG,Jannik Sinner,C0AU,Francisco Cerundolo,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,Z355,Alexander Zverev,DH50,Alejandro Davidovich Fokina,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,BK92,Alexander Bublik,FB98,Taylor Fritz,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,S0S1,Ben Shelton,RE44,Andrey Rublev,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,DH58,Alex de Minaur,KE29,Karen Khachanov,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,AG37,Felix Auger-Aliassime,AE14,Daniel Altmaier,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,MM58,Daniil Medvedev,SU87,Lorenzo Sonego,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 16 -,VA25,Valentin Vacherot,N771,Cameron Norrie,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,N771,Cameron Norrie,A0E2,Carlos Alcaraz,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,S0AG,Jannik Sinner,BU13,Zizou Bergs,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,Z355,Alexander Zverev,U182,Camilo Ugo Carabelli,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,FB98,Taylor Fritz,V832,Aleksandar Vukic,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,S0S1,Ben Shelton,C0E9,Flavio Cobolli,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,DH58,Alex de Minaur,D0F6,Gabriel Diallo,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,SU87,Lorenzo Sonego,M0EJ,Lorenzo Musetti,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,AE14,Daniel Altmaier,RH16,Casper Ruud,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,AG37,Felix Auger-Aliassime,MP20,Alexandre Muller,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,KE29,Karen Khachanov,F0FV,Joao Fonseca,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,MM58,Daniil Medvedev,D875,Grigor Dimitrov,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,RE44,Andrey Rublev,T0HA,Learner Tien,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,BK92,Alexander Bublik,MW02,Corentin Moutet,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,DH50,Alejandro Davidovich Fokina,C0H0,Arthur Cazaux,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,C0AU,Francisco Cerundolo,KI95,Miomir Kecmanovic,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 32 -,VA25,Valentin Vacherot,RC91,Arthur Rinderknech,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,A0E2,Carlos Alcaraz,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,S0AG,Jannik Sinner,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,Z355,Alexander Zverev,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,FB98,Taylor Fritz,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,S0S1,Ben Shelton,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,DH58,Alex de Minaur,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,M0EJ,Lorenzo Musetti,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,RH16,Casper Ruud,0,Bye,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,AG37,Felix Auger-Aliassime,C0DF,Francisco Comesana,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,KE29,Karen Khachanov,Q02L,Ethan Quinn,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,MM58,Daniil Medvedev,MU94,Jaume Munar,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,RE44,Andrey Rublev,F0BY,Jacob Fearnley,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,BK92,Alexander Bublik,P09Z,Alexei Popyrin,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,VA25,Valentin Vacherot,L0BV,Jiri Lehecka,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,DH50,Alejandro Davidovich Fokina,R0EB,Valentin Royer,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,AE14,Daniel Altmaier,GC88,Marcos Giron,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,BU13,Zizou Bergs,M0QI,Alex Michelsen,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,C0H0,Arthur Cazaux,D0FJ,Luciano Darderi,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,C0AU,Francisco Cerundolo,D923,Damir Dzumhur,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,C0E9,Flavio Cobolli,M0FH,Tomas Machac,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,D0F6,Gabriel Diallo,GJ37,Tallon Griekspoor,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,D875,Grigor Dimitrov,M0GZ,Giovanni Mpetshi Perricard,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,F0FV,Joao Fonseca,SU55,Denis Shapovalov,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,KI95,Miomir Kecmanovic,K0AZ,Aleksandar Kovacevic,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,MW02,Corentin Moutet,O522,Reilly Opelka,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,MP20,Alexandre Muller,N0AE,Brandon Nakashima,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,N771,Cameron Norrie,B0BI,Sebastian Baez,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,RC91,Arthur Rinderknech,M0CI,Fabian Marozsan,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,SU87,Lorenzo Sonego,K0AH,Sebastian Korda,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,T0HA,Learner Tien,BT72,Nuno Borges,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,U182,Camilo Ugo Carabelli,EA24,Tomas Martin Etcheverry,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,Round of 64 -,V832,Aleksandar Vukic,A0GC,Terence Atmane,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,2nd Round Qualifying -,K0AH,Sebastian Korda,R0EB,Valentin Royer,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,2nd Round Qualifying -,EA24,Tomas Martin Etcheverry,D0C1,Jesper de Jong,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,2nd Round Qualifying -,V832,Aleksandar Vukic,O522,Reilly Opelka,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,2nd Round Qualifying -,D923,Damir Dzumhur,K0AZ,Aleksandar Kovacevic,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,2nd Round Qualifying -,C0DF,Francisco Comesana,GB88,David Goffin,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,2nd Round Qualifying -,Q02L,Ethan Quinn,V812,Botic van de Zandschulp,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,2nd Round Qualifying -,F0BY,Jacob Fearnley,H997,Yannick Hanfmann,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,V812,Botic van de Zandschulp,B0CD,Jenson Brooksby,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,K0AH,Sebastian Korda,KI82,Vit Kopriva,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,H997,Yannick Hanfmann,ME82,Adrian Mannarino,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,EA24,Tomas Martin Etcheverry,MO44,Pedro Martinez,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,O522,Reilly Opelka,B0GG,Mattia Bellucci,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,D923,Damir Dzumhur,HB64,Quentin Halys,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,C0DF,Francisco Comesana,V0DZ,Luca Van Assche,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,K0AZ,Aleksandar Kovacevic,J0AZ,Kyrian Jacquet,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,GB88,David Goffin,M0JF,Hamad Medjedovic,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,R0EB,Valentin Royer,H996,Pierre-Hugues Herbert,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,D0C1,Jesper de Jong,MQ75,Kamil Majchrzak,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,Q02L,Ethan Quinn,BV16,Ugo Blanchet,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,F0BY,Jacob Fearnley,A0FC,Matteo Arnaldi,0,0
-352-2025,ATP Masters 1000 Paris,1000,Hard,Indoor,2025-11-02,1st Round Qualifying -,V832,Aleksandar Vukic,W09E,Adam Walton,0,0
 5100-2025,Athens,250,Hard,I,2025-11-08,Finals -,D643,Novak Djokovic,M0EJ,Lorenzo Musetti,0,0
 5100-2025,Athens,250,Hard,I,2025-11-08,Semi-Finals -,D643,Novak Djokovic,H997,Yannick Hanfmann,0,0
 5100-2025,Athens,250,Hard,I,2025-11-08,Semi-Finals -,M0EJ,Lorenzo Musetti,K0AH,Sebastian Korda,0,0
@@ -3823,3 +3739,89 @@ event_key,tournament,category,surface,indoor,end_date,round,winner_id,winner,los
 7485-2026,BNP Paribas Fortis European Open,250,Hard,Indoor,2026-10-25,1st Round Qualifying,DF88,Aziz Dougaz,G0IB,Tom Gentzsch,0,0
 7485-2026,BNP Paribas Fortis European Open,250,Hard,Indoor,2026-10-25,1st Round Qualifying,G0A0,Andrea Guerrieri,CG33,Kimmer Coppejans,0,0
 7485-2026,BNP Paribas Fortis European Open,250,Hard,Indoor,2026-10-25,1st Round Qualifying,O0A2,Gauthier Onclin,W0AH,Harry Wendelken,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Final,A0E2,Carlos Alcaraz,DH58,Alex de Minaur,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Semifinals,DH58,Alex de Minaur,Z355,Alexander Zverev,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Semifinals,A0E2,Carlos Alcaraz,MM58,Daniil Medvedev,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Quarterfinals,Z355,Alexander Zverev,F0DM,Arthur Fery,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Quarterfinals,A0E2,Carlos Alcaraz,PL56,Tommy Paul,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Quarterfinals,MM58,Daniil Medvedev,ME82,Adrian Mannarino,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Quarterfinals,DH58,Alex de Minaur,BK40,Matteo Berrettini,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,Z355,Alexander Zverev,GJ37,Tallon Griekspoor,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,A0E2,Carlos Alcaraz,BG23,Nikoloz Basilashvili,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,MM58,Daniil Medvedev,N771,Cameron Norrie,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,BK40,Matteo Berrettini,C0E9,Flavio Cobolli,0,1
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,PL56,Tommy Paul,D0FJ,Luciano Darderi,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,F0DM,Arthur Fery,M0EJ,Lorenzo Musetti,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,DH58,Alex de Minaur,T0HA,Learner Tien,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 16,ME82,Adrian Mannarino,M0NI,Jakub Mensik,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,MM58,Daniil Medvedev,M0N7,Daniel Merida,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,M0EJ,Lorenzo Musetti,TD51,Frances Tiafoe,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,BG23,Nikoloz Basilashvili,R09X,Jurij Rodionov,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,GJ37,Tallon Griekspoor,N0AE,Brandon Nakashima,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,Z355,Alexander Zverev,L0IL,Martin Landaluce,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,A0E2,Carlos Alcaraz,KE29,Karen Khachanov,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,C0E9,Flavio Cobolli,D875,Grigor Dimitrov,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,PL56,Tommy Paul,RE44,Andrey Rublev,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,ME82,Adrian Mannarino,B0ID,Ignacio Buse,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,N771,Cameron Norrie,C0AU,Francisco Cerundolo,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,DH58,Alex de Minaur,M0FH,Tomas Machac,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,M0NI,Jakub Mensik,N0CS,Lukas Neumayer,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,BK40,Matteo Berrettini,EA24,Tomas Martin Etcheverry,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,D0FJ,Luciano Darderi,A0FC,Matteo Arnaldi,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,F0DM,Arthur Fery,F0BY,Jacob Fearnley,0,1
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,Round of 32,T0HA,Learner Tien,V0DZ,Luca Van Assche,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,M0FH,Tomas Machac,M0CI,Fabian Marozsan,1,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,N0CS,Lukas Neumayer,D0DW,Titouan Droguet,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,F0BY,Jacob Fearnley,SU87,Lorenzo Sonego,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,ME82,Adrian Mannarino,MV14,Alex Molcan,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,ME82,Adrian Mannarino,T0A1,Thiago Agustin Tirante,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,SU87,Lorenzo Sonego,V0DP,Adolfo Daniel Vallejo,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,M0CI,Fabian Marozsan,S0QZ,Sebastian Sorger,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,N0CS,Lukas Neumayer,KI82,Vit Kopriva,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,D0DW,Titouan Droguet,S0WT,Joel Schwaerzler,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,M0FH,Tomas Machac,MW02,Corentin Moutet,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,F0BY,Jacob Fearnley,CD85,Pablo Carreno Busta,0,0
+337-2026,Erste Bank Open,500,Hard,Indoor,2026-11-01,1st Round Qualifying,MV14,Alex Molcan,M0JF,Hamad Medjedovic,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Final,VA25,Valentin Vacherot,L0BV,Jiri Lehecka,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Semifinals,VA25,Valentin Vacherot,FB98,Taylor Fritz,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Semifinals,L0BV,Jiri Lehecka,SL28,Jan-Lennard Struff,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Quarterfinals,FB98,Taylor Fritz,F0F1,Arthur Fils,0,1
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Quarterfinals,L0BV,Jiri Lehecka,K0EP,Jerome Kym,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Quarterfinals,SL28,Jan-Lennard Struff,BT72,Nuno Borges,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Quarterfinals,VA25,Valentin Vacherot,R0DG,Holger Rune,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,K0EP,Jerome Kym,S0S1,Ben Shelton,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,F0F1,Arthur Fils,M0QI,Alex Michelsen,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,VA25,Valentin Vacherot,J0DZ,Rafael Jodar,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,SL28,Jan-Lennard Struff,D643,Novak Djokovic,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,FB98,Taylor Fritz,SU55,Denis Shapovalov,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,L0BV,Jiri Lehecka,AE14,Daniel Altmaier,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,BT72,Nuno Borges,RH16,Casper Ruud,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 16,R0DG,Holger Rune,HB71,Hubert Hurkacz,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,D643,Novak Djokovic,HH26,Ugo Humbert,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,FB98,Taylor Fritz,H0BH,Rinky Hijikata,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,SU55,Denis Shapovalov,BU70,Remy Bertola,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,SL28,Jan-Lennard Struff,H997,Yannick Hanfmann,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,S0S1,Ben Shelton,K0AZ,Aleksandar Kovacevic,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,F0F1,Arthur Fils,M0GZ,Giovanni Mpetshi Perricard,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,J0DZ,Rafael Jodar,TE30,Alejandro Tabilo,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,L0BV,Jiri Lehecka,W367,Stan Wawrinka,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,HB71,Hubert Hurkacz,BU13,Zizou Bergs,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,K0EP,Jerome Kym,RC91,Arthur Rinderknech,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,M0QI,Alex Michelsen,V812,Botic van de Zandschulp,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,RH16,Casper Ruud,S0LA,Dominic Stricker,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,AE14,Daniel Altmaier,C0C8,Juan Manuel Cerundolo,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,BT72,Nuno Borges,B0LW,Mika Brunold,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,R0DG,Holger Rune,HB64,Quentin Halys,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,Round of 32,VA25,Valentin Vacherot,N0BS,Mariano Navone,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,C0C8,Juan Manuel Cerundolo,AE14,Daniel Altmaier,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,H997,Yannick Hanfmann,H0BH,Rinky Hijikata,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,BU70,Remy Bertola,B0LW,Mika Brunold,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,2nd Round Qualifying,M0GZ,Giovanni Mpetshi Perricard,K0AZ,Aleksandar Kovacevic,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,M0GZ,Giovanni Mpetshi Perricard,B0BI,Sebastian Baez,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,C0C8,Juan Manuel Cerundolo,S0K7,Zachary Svajda,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,B0LW,Mika Brunold,F0F2,Jaime Faria,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,H0BH,Rinky Hijikata,KI95,Miomir Kecmanovic,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,H997,Yannick Hanfmann,GC88,Marcos Giron,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,AE14,Daniel Altmaier,B0TP,Henry Bernet,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,K0AZ,Aleksandar Kovacevic,D994,James Duckworth,0,0
+328-2026,Swiss Indoors Basel,500,Hard,Indoor,2026-11-01,1st Round Qualifying,BU70,Remy Bertola,P0D0,Jakub Paul,0,0
