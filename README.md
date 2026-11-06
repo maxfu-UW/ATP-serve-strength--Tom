@@ -12,16 +12,16 @@ Men's singles players grouped into High, Mid and Low serve tiers on each surface
 | `serve_kmeans.py` | Serve tiers. Six stats per surface (1st serve in, 1st and 2nd serve points won, service games won, aces and double faults per match) are clipped at the 2.5th and 97.5th percentiles and standardized. Their average, with double faults flipped, is a serve-strength score that k-means (k = 3, k-means++ seeding, best of 50 runs) splits into High, Mid and Low. `--mode style` clusters on the six stats directly instead. Needs numpy. |
 | `round_markov.py` | Tournament odds. An absorbing Markov chain over draw rounds (R128, R64, R32, R16, QF, SF, F, then the title or out) for each tier. Round win rates are shrunk toward 50%, the chance of reaching each round comes from the chain's fundamental matrix, and 90% intervals come from 500 resamples of whole tournaments. Standard library only. |
 | `build_site.py` | Embeds the tables from `output/` in `index.html`. Standard library only. |
-| `data/` | Inputs: the ATP Tour 52-week serve leaderboards, and singles results (main draw and qualifying) for events ending 27 Oct 2025 to 26 Oct 2026. |
+| `data/` | Inputs: the ATP Tour 52-week serve leaderboards, and singles results (main draw and qualifying) for events ending 7 Nov 2025 to 6 Nov 2026. |
 | `output/` | The tier and odds tables the page shows. |
-| `archive/2026-10-23/` | Inputs and outputs from the 23 Oct 2026 run. |
+| `archive/` | Inputs and outputs from earlier runs, one folder per run date (23 and 26 Oct 2026). |
 
 ## Rebuild
 
 ```sh
 python3 serve_kmeans.py                    # serve tiers -> output/serve_*_level_k3.csv
 python3 round_markov.py                    # odds -> output/round_*.csv
-python3 build_site.py --as-of 2026-10-26   # date the serve stats were fetched
+python3 build_site.py --as-of 2026-11-06   # date the serve stats were fetched
 ```
 
 ## Caveats
