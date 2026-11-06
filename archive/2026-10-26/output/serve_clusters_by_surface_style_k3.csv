@@ -1,0 +1,346 @@
+surface,tier,strength_score,player_id,player,country,serve_rating,first_serve_pct,first_serve_pts_won_pct,second_serve_pts_won_pct,service_games_won_pct,aces_per_match,df_per_match
+all,High,1.4,S0AG,Jannik Sinner,ITA,306,65.3,81.2,58.2,93.7,9.1,1.5
+all,High,1.477,Z355,Alexander Zverev,GER,302.4,71.8,76.8,56.6,89.4,10,2.2
+all,High,1.377,FB98,Taylor Fritz,USA,299.8,66.1,79,53.4,89.2,13.9,1.8
+all,High,1.199,S0S1,Ben Shelton,USA,299.1,68.1,76.7,57.5,89.8,10,3
+all,High,1.02,HB71,Hubert Hurkacz,POL,297.4,64.7,79.4,51.2,89.5,15.2,2.6
+all,High,0.854,AG37,Felix Auger-Aliassime,CAN,291.9,67,78.1,51.3,87.9,10.4,2.8
+all,High,0.978,N0AE,Brandon Nakashima,USA,290.8,65.1,78.2,50.9,87.5,10.2,1.1
+all,High,0.929,BK40,Matteo Berrettini,ITA,290.1,65.3,76.8,54.2,86.3,9.6,2.1
+all,Mid,0.624,BK92,Alexander Bublik,KAZ,288.9,65.4,77.8,50.3,87,11.9,3.5
+all,High,0.878,L0BV,Jiri Lehecka,CZE,287.8,63.8,75.7,53.7,87.5,8.5,1.4
+all,Mid,0.649,RC91,Arthur Rinderknech,FRA,287.8,62.7,77.6,51.4,86.7,12.6,3.2
+all,High,0.694,D643,Novak Djokovic,SRB,287.7,66.5,74.9,54.9,86.2,8.1,2.9
+all,High,0.735,KE29,Karen Khachanov,RUS,286.5,64.9,75.4,53.9,86.5,7.8,2
+all,High,0.675,TE51,Stefanos Tsitsipas,GRE,286.5,61.9,77.4,53.8,87.8,7.9,2.3
+all,High,0.594,A0E2,Carlos Alcaraz,ESP,285.2,67,72.7,55.8,87.5,4.6,2.4
+all,High,0.733,DH50,Alejandro Davidovich Fokina,ESP,284.6,69.6,71.3,56.1,84.5,4.6,1.5
+all,High,0.611,F0F1,Arthur Fils,FRA,284.1,63.5,74.6,56.3,86.1,5.8,2.2
+all,Mid,0.406,HB64,Quentin Halys,FRA,282.7,58.8,79,51,85.4,11.6,3.1
+all,High,0.548,H997,Yannick Hanfmann,GER,282.7,62.1,75.7,53.9,84.4,8.9,2.3
+all,Mid,0.34,VA25,Valentin Vacherot,MON,282.2,63.7,76.4,51.1,84.5,9.8,3.3
+all,High,0.462,RH16,Casper Ruud,NOR,281.9,66.2,71.4,55.4,85.3,6.1,2.5
+all,High,0.537,P09Z,Alexei Popyrin,AUS,281.8,62.8,74.8,53.2,83.2,10,2.2
+all,High,0.581,F0FV,Joao Fonseca,BRA,281.4,67.7,70.1,56.4,83.5,5.4,1.7
+all,High,0.409,BT72,Nuno Borges,POR,281,66.3,74.8,50.3,85,6.5,1.9
+all,High,0.439,SU87,Lorenzo Sonego,ITA,279.9,66.6,73.4,52,82.2,7.6,1.9
+all,Mid,0.148,K0AZ,Aleksandar Kovacevic,USA,279.7,59.6,77.5,50.8,85,10.6,3.8
+all,Mid,0.187,B0PG,Alexander Blockx,BEL,279.7,59.8,77.6,51.3,85.8,8.5,3.3
+all,Mid,0.228,GJ37,Tallon Griekspoor,NED,279.4,63.4,74.2,52.6,83.3,9.3,3.4
+all,High,0.418,PL56,Tommy Paul,USA,279.3,61.1,74.1,54.5,84.7,6.8,1.9
+all,High,0.412,EA24,Tomas Martin Etcheverry,ARG,278.5,64.6,72.9,54.1,82.1,6.6,1.8
+all,High,0.233,RE44,Andrey Rublev,RUS,278.4,62,74.9,52.1,84.3,7.8,2.7
+all,High,0.309,TE30,Alejandro Tabilo,CHI,277.8,64.2,74.1,52.1,83,6.3,1.9
+all,Mid,-0.011,M0NI,Jakub Mensik,CZE,277.6,60.5,78.2,48,83.6,11.3,4
+all,Mid,-0.038,MM58,Daniil Medvedev,RUS,277.6,64,75.8,48.3,84.6,8.8,3.9
+all,Mid,0.206,A0GC,Terence Atmane,FRA,277.6,62,75.7,51.5,83.3,7.7,2.6
+all,High,0.212,TD51,Frances Tiafoe,USA,276.6,59,74.7,53.8,84.8,6.6,2.3
+all,Mid,0.049,HH26,Ugo Humbert,FRA,276,59.1,75.7,53.3,84,7.2,3.3
+all,Mid,0.105,T0A1,Thiago Agustin Tirante,ARG,275.4,57.7,76.2,53,82.8,8.6,2.9
+all,Low,0.067,M0EJ,Lorenzo Musetti,ITA,273.6,64.6,69.9,54.6,82.4,4.5,2.4
+all,Low,0.087,MQ75,Kamil Majchrzak,POL,272.9,62.9,72,51,81.5,7.4,1.9
+all,Low,-0.138,M0QI,Alex Michelsen,USA,272,63.8,72.2,51.4,81.5,6.2,3.1
+all,Mid,-0.192,SL28,Jan-Lennard Struff,GER,271.6,56.9,76.2,49.7,81.5,10.9,3.6
+all,Low,0.002,M0CI,Fabian Marozsan,HUN,271.4,65.7,69.9,53.1,80.1,4.7,2.1
+all,Low,-0.09,N771,Cameron Norrie,GBR,271.1,63.7,70.1,53.5,81.6,4.8,2.6
+all,Low,-0.08,GC88,Marcos Giron,USA,270.6,64,70.5,51.7,81.2,5.4,2.2
+all,Mid,-0.551,C0JP,Raphael Collignon,BEL,270.3,62.7,75.5,47.2,81.9,8,5
+all,Low,-0.059,F0DM,Arthur Fery,GBR,269.3,63.4,69.4,54,80.1,4.3,1.9
+all,Mid,-0.297,B0GG,Mattia Bellucci,ITA,269,61.8,72.3,50.6,80.3,7.3,3.3
+all,Mid,-0.451,BU13,Zizou Bergs,BEL,268.9,58.5,74.4,51,81.8,7.5,4.3
+all,Mid,-0.39,T0HA,Learner Tien,USA,268.5,62.1,72.4,51.4,80.6,5.7,3.7
+all,Low,-0.158,J0DZ,Rafael Jodar,ESP,268.2,63.2,69.3,53.7,79.9,4.3,2.2
+all,Mid,-0.373,C977,Marin Cilic,CRO,267.8,57.4,76.5,47.8,80.3,9,3.2
+all,Low,-0.256,KI95,Miomir Kecmanovic,SRB,267.3,62.4,71.7,51.5,79.1,5,2.4
+all,Mid,-0.321,D994,James Duckworth,AUS,267.2,55,73.8,52.6,81.5,7.9,3.6
+all,Low,-0.327,DH58,Alex de Minaur,AUS,266.5,57.5,70.9,55.2,81.4,4.4,2.9
+all,Low,-0.34,MU94,Jaume Munar,ESP,266.5,61.7,72.8,50,78.9,5.7,2.6
+all,Mid,-0.643,G0IX,Arthur Gea,FRA,265.9,59.4,73.5,50.9,80.4,6.3,4.6
+all,Low,-0.479,AE14,Daniel Altmaier,GER,264.7,62.9,71.5,48.2,78.2,6.8,2.9
+all,Mid,-0.43,C0E9,Flavio Cobolli,ITA,263.7,55.9,72.6,52.2,79.5,6.3,2.8
+all,Low,-0.508,D0FJ,Luciano Darderi,ITA,262.4,57.7,71.6,51.1,78.6,6,2.6
+all,Mid,-0.859,V812,Botic van de Zandschulp,NED,262.2,61.3,72.8,46.1,79.6,7.3,4.9
+all,Low,-0.585,C0AU,Francisco Cerundolo,ARG,262.1,60.5,70.1,51.9,78.3,4.3,3
+all,Low,-0.38,B0CD,Jenson Brooksby,USA,262,68.3,66.9,50.4,74.9,2.8,1.3
+all,Low,-0.588,N0BS,Mariano Navone,ARG,262,71.7,65.9,49.8,75,2,2.4
+all,Low,-0.66,M0N7,Daniel Merida,ESP,261.8,67.2,67.6,49.5,77.2,3.4,3.1
+all,Mid,-0.604,C0C8,Juan Manuel Cerundolo,ARG,261.5,56.5,71.6,51.9,78.5,6.1,3.1
+all,Low,-0.476,ME82,Adrian Mannarino,FRA,261.4,62.6,70.5,49.7,75.9,4.6,1.9
+all,Mid,-0.892,SU55,Denis Shapovalov,CAN,260.7,58.1,72.5,50.2,77.6,7.7,5.4
+all,Low,-0.628,M0FH,Tomas Machac,CZE,260.3,63.6,68.6,49.3,76.7,4.6,2.5
+all,Mid,-1.0,L0IL,Martin Landaluce,ESP,259.5,60.7,71,49.7,77.4,5.8,5.1
+all,Low,-0.654,H0BH,Rinky Hijikata,AUS,259.4,59.4,69.8,51.6,76.6,4.7,2.7
+all,Low,-0.479,B0BI,Sebastian Baez,ARG,258.4,70.7,64.1,51,72.7,1.8,1.9
+all,Low,-0.682,B0ID,Ignacio Buse,PER,257.6,61.5,69.1,50.3,74.7,4.2,2.2
+all,Low,-0.832,V0DP,Adolfo Daniel Vallejo,PAR,257.3,63,68.9,48.8,75.8,3.6,2.8
+all,Low,-0.834,MW02,Corentin Moutet,FRA,256.3,65,66.4,50.3,74.1,3.3,2.8
+all,Low,-1.114,KI82,Vit Kopriva,CZE,253.5,62,68.4,47.8,74.7,4.1,3.5
+all,Low,-1.153,A0FC,Matteo Arnaldi,ITA,252,58.9,71.1,46.7,73.3,5.6,3.6
+all,Low,-1.258,V0DZ,Luca Van Assche,FRA,251.8,61.9,67.4,48.4,73.5,4.8,4.2
+all,Low,-1.176,U182,Camilo Ugo Carabelli,ARG,250.9,58.8,69.2,47.6,74.5,3.8,3
+all,Low,-0.831,D923,Damir Dzumhur,BIH,240.6,64.2,61.7,49.9,65.1,1.4,1.7
+hard,High,1.464,S0AG,Jannik Sinner,ITA,309.9,67.9,82.2,56.8,94.7,9.5,1.2
+hard,High,1.377,Z355,Alexander Zverev,GER,303.7,71.7,77.6,55.1,90.4,11.1,2.2
+hard,High,0.967,HB71,Hubert Hurkacz,POL,298.3,65.9,79,51.3,90.1,14.5,2.5
+hard,High,0.999,S0S1,Ben Shelton,USA,297,68.5,76.6,56.1,88.8,9.8,2.8
+hard,High,1.084,FB98,Taylor Fritz,USA,296.1,65.2,78.3,52.7,88.7,13,1.8
+hard,High,1.024,BK40,Matteo Berrettini,ITA,294.6,64.6,77.4,56.4,87.3,11.1,2.2
+hard,High,1.041,N0AE,Brandon Nakashima,USA,294,64.9,78.4,52.4,88.7,10.8,1.2
+hard,Mid,0.558,BK92,Alexander Bublik,KAZ,291.1,64.8,78.5,50.8,88.3,12.2,3.5
+hard,High,0.631,AG37,Felix Auger-Aliassime,CAN,290.4,66.2,78.3,52.2,86.8,9.7,2.8
+hard,High,0.784,DH50,Alejandro Davidovich Fokina,ESP,290.2,70.8,72.7,56,87.3,5,1.6
+hard,High,0.794,K0AH,Sebastian Korda,USA,290,62.5,78.4,54.4,86.9,9.7,1.9
+hard,High,0.689,KE29,Karen Khachanov,RUS,289.8,64,77.2,53.9,88.4,8.5,2.2
+hard,High,0.542,GJ37,Tallon Griekspoor,NED,287.6,64.2,75.9,54.9,85.5,10,2.9
+hard,High,0.527,A0E2,Carlos Alcaraz,ESP,287.1,67.5,73.2,55.9,87.9,4.8,2.2
+hard,High,0.473,TE51,Stefanos Tsitsipas,GRE,286.2,61.5,77.5,53.7,87.5,8.5,2.5
+hard,Mid,0.337,B0PG,Alexander Blockx,BEL,285.6,60.1,78.3,52.3,87.8,10.3,3.2
+hard,Mid,0.256,K0AZ,Aleksandar Kovacevic,USA,285.2,59.5,78.8,51.7,87.3,11.6,3.7
+hard,High,0.424,RH16,Casper Ruud,NOR,285.1,66.3,72.2,53.9,87.2,7.9,2.4
+hard,High,0.631,EA24,Tomas Martin Etcheverry,ARG,285,64.1,74.5,55,84.2,8.7,1.5
+hard,High,0.433,F0F1,Arthur Fils,FRA,284.2,63.3,73.9,57,85.6,6.6,2.2
+hard,High,0.517,L0BV,Jiri Lehecka,CZE,283.9,62.9,75.6,53,86.3,7.5,1.4
+hard,High,0.345,BT72,Nuno Borges,POR,283.7,66.3,75.6,51.4,85.7,6.9,2.2
+hard,High,0.283,D643,Novak Djokovic,SRB,283.7,64.4,75,54.3,85.9,7,2.9
+hard,Mid,0.219,VA25,Valentin Vacherot,MON,283.4,64.1,77,50.5,84.5,10.6,3.3
+hard,High,0.299,RE44,Andrey Rublev,RUS,283.3,62.4,77.4,51.4,85.8,8.9,2.6
+hard,Mid,0.046,MM58,Daniil Medvedev,RUS,282.9,64.7,76.6,49.1,86.8,9.5,3.8
+hard,Mid,0.255,HB64,Quentin Halys,FRA,282.5,60.1,78.7,49.1,85.2,12.2,2.8
+hard,High,0.402,PL56,Tommy Paul,USA,282.2,61.3,75.2,54.8,85.6,7.1,1.8
+hard,High,0.217,TE30,Alejandro Tabilo,CHI,280.4,64.4,74.4,52.1,84.4,7.3,2.2
+hard,High,0.136,HH26,Ugo Humbert,FRA,280.1,60.6,76.3,54.2,84.8,7,2.8
+hard,Mid,-0.09,M0NI,Jakub Mensik,CZE,279.5,60.5,79.1,48,84.2,11.6,3.9
+hard,Low,0.126,F0FV,Joao Fonseca,BRA,278.4,66.7,71.9,52.9,82.9,6.2,2.2
+hard,High,-0.019,M0QI,Alex Michelsen,USA,278,64.3,73.6,52.3,84.1,6.6,2.9
+hard,Low,0.007,N771,Cameron Norrie,GBR,276,64.2,71.1,54.8,83,5.2,2.3
+hard,Low,-0.065,M0EJ,Lorenzo Musetti,ITA,275.7,64.1,70.6,55.4,83.2,5.1,2.7
+hard,Mid,-0.144,A0GC,Terence Atmane,FRA,275.4,60.4,75.8,51.3,83.1,7.8,3
+hard,Mid,-0.111,T0A1,Thiago Agustin Tirante,ARG,274.9,55.8,79,51.2,81.5,10.6,3.2
+hard,Low,-0.029,TD51,Frances Tiafoe,USA,274.2,59,74.5,52.9,83.4,6.3,1.9
+hard,Low,-0.179,DH58,Alex de Minaur,AUS,273.1,58.9,71.8,56.2,83.7,5.2,2.7
+hard,Mid,-0.371,T0HA,Learner Tien,USA,273.1,62.5,73.8,51.9,82.5,6,3.6
+hard,Low,-0.142,M0CI,Fabian Marozsan,HUN,272.4,65.1,69.8,54.2,80.5,5,2.2
+hard,Mid,-0.354,SL28,Jan-Lennard Struff,GER,271.8,59.6,75.6,48.9,81.2,9.8,3.3
+hard,Mid,-0.465,BU13,Zizou Bergs,BEL,271.5,57.6,74.8,52.5,83.1,7.4,3.9
+hard,Mid,-0.622,G0IX,Arthur Gea,FRA,270.4,59.9,74.6,51.7,82.2,6.4,4.4
+hard,Low,-0.288,MQ75,Kamil Majchrzak,POL,269.7,62.3,71.4,50.3,80.2,7.7,2.2
+hard,Low,-0.291,ME82,Adrian Mannarino,FRA,269.1,62.4,73.3,50,79.7,5.5,1.8
+hard,Low,-0.41,KI95,Miomir Kecmanovic,SRB,268.4,62.1,72,51.1,79.7,6,2.5
+hard,Low,-0.441,GC88,Marcos Giron,USA,267.3,63.5,69.9,50.6,80.1,5.4,2.2
+hard,Low,-0.401,F0DM,Arthur Fery,GBR,266.2,63.8,68.3,53.7,78.3,4,1.9
+hard,Low,-0.8,M0N7,Daniel Merida,ESP,266.1,64,69.5,50.8,81.3,4.4,3.9
+hard,Mid,-0.83,SU55,Denis Shapovalov,CAN,265.9,59,73.7,50.1,79.8,8.4,5.1
+hard,Low,-0.543,N0BS,Mariano Navone,ARG,265.8,67.3,67.6,52.3,77.8,3.4,2.6
+hard,Low,-0.398,B0CD,Jenson Brooksby,USA,265.5,67.6,68.4,50.6,77.5,2.8,1.4
+hard,Low,-0.642,C0AU,Francisco Cerundolo,ARG,265.1,61.2,71.3,51.8,78.6,5.2,3
+hard,Low,-0.498,J0DZ,Rafael Jodar,ESP,264.9,63,68.6,53.3,78,4.1,2.1
+hard,Mid,-0.945,V812,Botic van de Zandschulp,NED,264.8,61,74.2,45.6,81.2,7.9,5.1
+hard,Low,-0.651,M0FH,Tomas Machac,CZE,263.5,63.9,69.1,49.2,78.3,5.3,2.3
+hard,Low,-0.29,B0BI,Sebastian Baez,ARG,263.1,71.9,63.6,53.1,74.2,2.1,1.8
+hard,Mid,-0.797,D994,James Duckworth,AUS,262.5,54.9,72.8,50.9,79.9,7.7,3.7
+hard,Low,-0.736,C0E9,Flavio Cobolli,ITA,262.4,56.5,72.3,51.4,78.5,6.6,2.9
+hard,Low,-0.828,D0FJ,Luciano Darderi,ITA,261.2,59.1,71.6,48.8,77.2,7.5,3
+hard,Low,-0.903,AE14,Daniel Altmaier,GER,260.2,61.5,71,47.9,75.8,7.1,3.1
+hard,Mid,-1.136,V0DZ,Luca Van Assche,FRA,258.2,58.5,72.5,46.6,77.9,6.3,3.6
+hard,Low,-1.004,H0BH,Rinky Hijikata,AUS,256.9,58.6,69.4,51.9,75.4,4.5,2.9
+hard,Low,-0.895,B0ID,Ignacio Buse,PER,255.5,61.7,68.5,50.6,72.1,4.8,2.2
+hard,Low,-1.57,A0FC,Matteo Arnaldi,ITA,240.6,57.6,70.9,43.2,67.9,4.6,3.6
+clay,High,1.297,S0S1,Ben Shelton,USA,300.2,65.9,76.9,60.5,91.2,8.6,2.9
+clay,High,1.076,S0AG,Jannik Sinner,ITA,293.8,61,77.2,61.1,91.2,4.9,1.6
+clay,High,0.916,HB64,Quentin Halys,FRA,291.7,57.9,79.9,56.9,89,11.6,3.6
+clay,High,0.921,Z355,Alexander Zverev,GER,290.4,71.4,72.7,58,84.8,5.8,2.3
+clay,High,0.894,HB71,Hubert Hurkacz,POL,288.6,60.2,78.6,52.7,84.3,15.1,2.3
+clay,High,0.918,FB98,Taylor Fritz,USA,287.7,68.3,72.5,51.5,83.9,14,2.5
+clay,High,0.889,TE51,Stefanos Tsitsipas,GRE,287.1,62.8,76.5,54.9,88.9,5.9,1.9
+clay,High,0.766,D643,Novak Djokovic,SRB,286.5,69.4,74.2,54.9,83.8,7.5,3.3
+clay,High,0.728,RC91,Arthur Rinderknech,FRA,285.4,63.2,76.9,52.1,86.8,10,3.6
+clay,High,0.877,H997,Yannick Hanfmann,GER,285.2,61.5,75.2,56.6,86.3,7.5,1.9
+clay,High,0.907,L0BV,Jiri Lehecka,CZE,284,66.8,72.4,54,85,6.9,1.1
+clay,High,0.809,F0FV,Joao Fonseca,BRA,283.7,67.5,70.3,58.4,84.5,4.3,1.3
+clay,High,0.747,AG37,Felix Auger-Aliassime,CAN,283.6,68.6,74.3,50.5,84.9,7.7,2.4
+clay,High,0.741,A0GC,Terence Atmane,FRA,282.4,63.7,75.2,53.8,85,6.6,1.9
+clay,High,0.537,F0F1,Arthur Fils,FRA,281.2,63.2,75.7,54.9,87.2,2.3,2.1
+clay,High,0.543,RH16,Casper Ruud,NOR,280.6,66,70.5,58.3,84.1,4.1,2.4
+clay,High,0.66,BK40,Matteo Berrettini,ITA,279.9,64.4,74.7,53,83.7,5.7,1.6
+clay,High,0.665,TE30,Alejandro Tabilo,CHI,279.8,64.3,74.7,53.3,83.5,5.5,1.5
+clay,High,0.571,P09Z,Alexei Popyrin,AUS,279.1,58.9,77.1,52.7,84.7,8.3,2.6
+clay,High,0.45,VA25,Valentin Vacherot,MON,278.8,62.6,74.9,52.6,84.6,7.3,3.2
+clay,High,0.694,N0AE,Brandon Nakashima,USA,278.7,65.4,76.5,48,82.5,7,0.7
+clay,High,0.54,T0A1,Thiago Agustin Tirante,ARG,278.1,59.3,74.2,55.8,84,7.1,2.3
+clay,High,0.576,KE29,Karen Khachanov,RUS,276.5,66.5,71.2,53.2,81.3,5.5,1.2
+clay,Mid,0.57,CD85,Pablo Carreno Busta,ESP,276,67.1,67.5,60.6,77.6,4.3,1.1
+clay,High,0.348,J0DZ,Rafael Jodar,ESP,274.9,64,70,55.7,83.2,4.1,2.1
+clay,High,0.253,BK92,Alexander Bublik,KAZ,274.6,64.6,73.2,49.3,83.2,7.8,3.5
+clay,Low,0.056,C0JP,Raphael Collignon,BEL,273.5,62.4,76.9,48.5,82.2,8.5,5
+clay,High,0.199,B0PG,Alexander Blockx,BEL,272.9,59.1,76.8,50.4,83.3,6.5,3.2
+clay,High,0.165,F0F2,Jaime Faria,POR,272.7,60.2,73.6,53.3,82.1,7.1,3.6
+clay,High,0.269,EA24,Tomas Martin Etcheverry,ARG,272.2,64.7,71.7,53,80.4,4.5,2.1
+clay,High,0.242,RE44,Andrey Rublev,RUS,271.8,61.7,71.4,53.4,82.1,5.5,2.3
+clay,Low,0.044,C0DF,Francisco Comesana,ARG,271.4,65.1,73.9,47.7,80.7,8.4,4.4
+clay,High,0.173,M0JF,Hamad Medjedovic,SRB,271.1,67.4,71.3,48.2,80.6,6.4,2.8
+clay,High,-0.005,A0E2,Carlos Alcaraz,ESP,270.5,62.9,68.4,54.9,84.2,3.3,3.2
+clay,High,0.067,P0HW,Dino Prizmic,CRO,269.8,59.1,70.9,56.1,82,4.6,2.9
+clay,High,0.076,TD51,Frances Tiafoe,USA,269.4,56.2,73.5,52.2,83.3,7.4,3.2
+clay,High,0.153,BT72,Nuno Borges,POR,268.9,64.1,72.6,46.9,81.7,5.6,2
+clay,Low,-0.085,M0NI,Jakub Mensik,CZE,268.2,58.5,77.1,47.4,81.6,7.9,4.3
+clay,Mid,0.091,MV14,Alex Molcan,SVK,267.9,63.3,69.3,55.1,79.3,2.7,1.8
+clay,High,0.05,PL56,Tommy Paul,USA,267.4,61,70.1,53.4,80.5,4.7,2.3
+clay,High,-0.013,C0E9,Flavio Cobolli,ITA,266.8,55,72.3,55.6,81.9,4.6,2.6
+clay,Mid,0.003,M0CI,Fabian Marozsan,HUN,265.7,65.7,67.4,54.4,77.5,2.5,1.8
+clay,Mid,-0.034,M0EJ,Lorenzo Musetti,ITA,265.1,66.8,67.1,51.3,79.2,2.4,1.7
+clay,Mid,-0.097,AE14,Daniel Altmaier,GER,263.7,64.1,69.8,49.6,78,4.5,2.3
+clay,Low,-0.191,A0FC,Matteo Arnaldi,ITA,263.5,60.7,71.3,50.2,78.4,6.3,3.4
+clay,Low,-0.296,D0C1,Jesper de Jong,NED,262.7,62.5,73.5,44,77.9,9.4,4.6
+clay,High,-0.136,D0FJ,Luciano Darderi,ITA,262.5,56,72.1,53,79.1,4.6,2.3
+clay,Low,-0.231,C0C8,Juan Manuel Cerundolo,ARG,262.4,59.1,70.3,51.4,78.8,6.1,3.3
+clay,Mid,-0.188,V0DP,Adolfo Daniel Vallejo,PAR,262.3,64.6,69.1,49.9,77.8,3.2,2.3
+clay,High,-0.276,PH64,Andrea Pellegrino,ITA,261.1,55.1,68.4,55.7,81.5,2.8,2.4
+clay,Mid,-0.255,C0AU,Francisco Cerundolo,ARG,260.5,60.4,68.4,53,77.8,3.2,2.3
+clay,Mid,-0.218,KI95,Miomir Kecmanovic,SRB,260,61.3,70.3,52.1,75.8,2.3,1.8
+clay,Low,-0.248,N0AM,Emilio Nava,USA,259.4,66,70.4,41.5,77.3,7.5,3.3
+clay,Mid,-0.358,M0N7,Daniel Merida,ESP,259.2,69.1,66.8,48.6,75.1,2.1,2.5
+clay,Mid,-0.287,B0ID,Ignacio Buse,PER,259,60.6,69.4,50.1,77,4.2,2.3
+clay,Low,-0.523,HH26,Ugo Humbert,FRA,258.5,54.5,73.6,49.7,78.4,6.9,4.6
+clay,Mid,-0.237,DH50,Alejandro Davidovich Fokina,ESP,257.8,69.3,64.1,50.6,72.9,2.1,1.2
+clay,Mid,-0.652,N0BS,Mariano Navone,ARG,257.1,74.7,64.6,46.6,72.5,1,2.3
+clay,Mid,-0.497,N771,Cameron Norrie,GBR,256.8,61.1,67.6,50.4,77.4,3.3,3
+clay,Low,-0.416,S0H2,Aleksandr Shevchenko,KAZ,256.6,59,68.9,52.4,74.6,4.5,2.8
+clay,Mid,-0.464,U182,Camilo Ugo Carabelli,ARG,256.3,61.5,69,48.2,76.6,3.7,2.7
+clay,Mid,-0.497,M0QI,Alex Michelsen,USA,256.1,62.3,68.1,50,74.5,4.4,3.2
+clay,Low,-0.633,TA29,Marco Trungelliti,ARG,255.6,60.3,68.6,48.9,77.7,3.9,3.8
+clay,Low,-0.708,V812,Botic van de Zandschulp,NED,254.9,62,69.5,48,75.5,4.3,4.4
+clay,Mid,-0.42,G0FW,Vilius Gaubas,LTU,254.6,68.5,63.7,47.9,73.6,2.5,1.6
+clay,Mid,-0.634,KI82,Vit Kopriva,CZE,254,63.4,68.7,47.3,74.7,3.2,3.3
+clay,Mid,-0.57,M0FH,Tomas Machac,CZE,254,63,67.6,49.4,73.6,3.3,2.9
+clay,Low,-0.684,T0HA,Learner Tien,USA,253.6,61.1,68.3,50.8,73.3,4,3.9
+clay,Mid,-0.627,B0FV,Roman Andres Burruchaga,ARG,252.8,64.6,66.1,49.7,72.5,2.8,2.9
+clay,Low,-0.763,BU13,Zizou Bergs,BEL,251.3,57,68,51.8,73.5,5,4
+clay,Mid,-0.618,B0BI,Sebastian Baez,ARG,250.9,68.8,64.1,49,69.7,1.3,2
+clay,Low,-0.921,V0DZ,Luca Van Assche,FRA,250.7,64.7,64.6,50.5,71.9,3.8,4.8
+clay,Mid,-0.678,MW02,Corentin Moutet,FRA,250.2,64.4,65.8,48.5,71.8,2,2.3
+clay,Low,-0.842,MM58,Daniil Medvedev,RUS,249.8,61.8,72,42.4,73.3,4.6,4.3
+clay,Low,-0.72,D0DW,Titouan Droguet,FRA,249.7,56.2,68.6,49.5,73.5,5,3.1
+clay,Mid,-0.888,MO44,Pedro Martinez,ESP,246.5,67.4,66.2,43.9,70.8,0.8,2.6
+clay,Low,-0.969,DH58,Alex de Minaur,AUS,246.1,53.8,67.5,51.8,74.1,2.2,3.3
+clay,Mid,-0.56,D923,Damir Dzumhur,BIH,243.7,66.1,61.9,51.2,64.8,1,1.3
+clay,Low,-1.3,SU55,Denis Shapovalov,CAN,240.3,53,68.4,48.9,72.5,3.6,6.1
+clay,Low,-1.745,G0IX,Arthur Gea,FRA,209.1,52.2,59,43.4,56.5,5,7
+grass,High,1.401,Z355,Alexander Zverev,GER,319,73,80.6,60,93.8,14,2.4
+grass,High,1.221,S0AG,Jannik Sinner,ITA,317.5,65.5,84.5,56.6,95.2,18.3,2.6
+grass,High,1.305,RC91,Arthur Rinderknech,FRA,316.4,63.5,82.5,59.5,93.1,20.8,3
+grass,High,1.278,FB98,Taylor Fritz,USA,312.5,68.1,81.9,55.9,91.4,16.9,1.7
+grass,High,1.192,M0GZ,Giovanni Mpetshi Perricard,FRA,311.3,72.9,76.4,52.9,89.7,21.8,2.4
+grass,High,1.011,BK40,Matteo Berrettini,ITA,311,70.3,80.7,50.4,91.2,22.7,4.3
+grass,High,0.936,S0S1,Ben Shelton,USA,307.3,69.5,76.6,59,92.6,13.6,4
+grass,High,0.935,AG37,Felix Auger-Aliassime,CAN,307,67.4,82,49.8,94.5,16.4,3.1
+grass,High,0.934,BK92,Alexander Bublik,KAZ,304.6,68.8,82,50.2,88.5,18.6,3.5
+grass,High,0.917,L0BV,Jiri Lehecka,CZE,303.1,63.8,78.9,55.4,93.1,13.9,2
+grass,High,0.828,HB71,Hubert Hurkacz,POL,302.6,64.8,81.6,49.1,92.4,18.1,3.4
+grass,High,0.937,D0CO,Jack Draper,GBR,301.5,73,76.2,61.3,87.8,4,0.8
+grass,High,0.93,SU87,Lorenzo Sonego,ITA,301.1,71,75.8,56.5,88.1,11.2,1.5
+grass,High,0.798,D643,Novak Djokovic,SRB,299.8,69.9,75.1,56.4,88.9,12.3,2.8
+grass,High,0.664,KE17,Nick Kyrgios,AUS,299.7,77.6,76.5,42.9,91.4,13.3,2
+grass,High,0.61,D994,James Duckworth,AUS,297.3,54.8,80.2,62.3,92.5,10.5,3
+grass,High,0.609,TD51,Frances Tiafoe,USA,295.2,62.9,76.8,59.6,91.7,6.8,2.6
+grass,Low,0.286,B0PG,Alexander Blockx,BEL,294.9,64.5,79.1,52,91.3,16,8
+grass,High,0.705,Z371,Zhizhen Zhang,CHN,294,67.9,77.3,50.6,89.2,10,1
+grass,High,0.67,DH50,Alejandro Davidovich Fokina,ESP,293.9,66.9,74.3,60.9,87.8,5.6,1.6
+grass,High,0.509,B0GG,Mattia Bellucci,ITA,293.7,62.6,72.9,60.9,91,10,3.7
+grass,High,0.587,Z0BZ,Michael Zheng,USA,293.5,63,74.8,53.2,90.2,15,2.7
+grass,High,0.627,F0F1,Arthur Fils,FRA,293.3,67.9,78.9,50.8,88.2,9.5,2
+grass,High,0.567,H997,Yannick Hanfmann,GER,293.1,62.9,82.6,51.1,88.2,10.9,2.6
+grass,High,0.669,BT72,Nuno Borges,POR,292.8,70,75.6,53.5,88,6.7,1
+grass,High,0.584,KE29,Karen Khachanov,RUS,292.5,67.1,74.7,55.9,87.3,10,2.5
+grass,High,0.508,SX50,Roman Safiullin,RUS,291.3,68.4,75,56.1,87,7.8,3
+grass,High,0.477,M0NI,Jakub Mensik,CZE,291,65.7,74.2,50,84.4,21,4.3
+grass,High,0.578,MQ75,Kamil Majchrzak,POL,289.7,65.4,74,57.9,86.6,6.9,1.1
+grass,High,0.418,D0DT,Martin Damm,USA,289.3,67.2,74.7,50,88,12.8,3.4
+grass,High,0.461,PL56,Tommy Paul,USA,289.2,60.2,77.3,55.3,89.3,9.4,2.3
+grass,High,0.509,N0AE,Brandon Nakashima,USA,288.9,65.7,79.7,46.4,87.6,11.2,1.7
+grass,High,0.332,D875,Grigor Dimitrov,BUL,288.7,62.2,77.2,55.7,86.4,11.9,4.7
+grass,High,0.456,O513,Sebastian Ofner,AUT,286.8,59.4,76.8,51.5,81.6,20.5,3
+grass,High,0.437,TE51,Stefanos Tsitsipas,GRE,286.8,61,81.6,48.8,86.1,11.3,2
+grass,High,0.32,P0HW,Dino Prizmic,CRO,286.4,62.1,72.2,60.2,88.9,6,3
+grass,Low,0.214,V0AM,Otto Virtanen,FIN,286.3,58,75.7,54,88.9,14.7,5
+grass,Low,0.236,SL28,Jan-Lennard Struff,GER,285.8,56.3,81.8,48.2,86.9,17.4,4.8
+grass,High,0.448,W09E,Adam Walton,AUS,285.6,61.3,75.5,58.1,85.4,6,0.7
+grass,High,0.371,WB32,Yibing Wu,CHN,284.6,63.9,76.7,50.7,85.3,10,2
+grass,Low,0.081,M0JF,Hamad Medjedovic,SRB,284.6,66.4,77.3,46.6,90,10,5.7
+grass,Low,0.069,C0JP,Raphael Collignon,BEL,282.7,65.1,79,46.9,87.9,9,5.2
+grass,High,0.232,GJ37,Tallon Griekspoor,NED,282.6,67.7,71.7,50.8,83.9,12,3.5
+grass,High,0.194,HH26,Ugo Humbert,FRA,282.4,59.8,76.2,54.8,86.8,8.1,3.3
+grass,Mid,0.346,F0FV,Joao Fonseca,BRA,281.4,71.9,64.4,57.8,80.8,8,1.5
+grass,Low,0.122,SY67,Sho Shimabukuro,JPN,280.8,55.6,80.6,53.7,85.7,9,3.8
+grass,Low,-0.014,Q02L,Ethan Quinn,USA,280,63.6,79.1,47.9,85.2,9.8,5.6
+grass,High,0.254,A0GC,Terence Atmane,FRA,280,66.8,76.2,47.9,81.7,9.4,2
+grass,High,0.211,CH12,Jan Choinski,GBR,279.4,64.8,75.5,46.4,84.1,10.6,2
+grass,Mid,0.139,B0BI,Sebastian Baez,ARG,279.3,74.8,72,47.2,83.3,4,2
+grass,Mid,0.297,EA24,Tomas Martin Etcheverry,ARG,279.3,67,69.8,55.1,80,8.7,1.3
+grass,Mid,0.141,MV14,Alex Molcan,SVK,279.2,68.9,69.2,54.5,83.3,6.3,3
+grass,Low,0.073,AE14,Daniel Altmaier,GER,278.8,64.1,76.1,46.3,84.6,11.5,3.8
+grass,High,0.145,GC88,Marcos Giron,USA,278.6,65.9,74,49.8,84.4,6.9,2.4
+grass,Mid,0.19,BM95,Benjamin Bonzi,FRA,277.1,66.7,75,49.1,81.8,5.8,1.3
+grass,Low,-0.025,MM58,Daniil Medvedev,RUS,277.1,62.5,75.1,50.4,84.4,9.1,4.4
+grass,Mid,0.073,D0F6,Gabriel Diallo,CAN,276.9,69.8,72.1,47,81.4,9.9,3.3
+grass,Low,-0.079,L0IL,Martin Landaluce,ESP,276.7,62,74.1,51.3,83.1,11.6,5.4
+grass,Low,0.015,MU94,Jaume Munar,ESP,276.3,62.5,80.9,42.9,83.8,9.6,3.4
+grass,Mid,0.012,CD85,Pablo Carreno Busta,ESP,276,67.7,69,52.5,84.8,5,3
+grass,Mid,0.069,BD06,Roberto Bautista Agut,ESP,275.6,69.8,70.8,50,81.5,6,2.5
+grass,Mid,-0.002,N0BS,Mariano Navone,ARG,275.2,75.9,66.1,54.4,77.8,3.5,2.5
+grass,Low,-0.269,F0F2,Jaime Faria,POR,275,60.9,75.3,52.9,82.9,12,9
+grass,Mid,0.049,M0CI,Fabian Marozsan,HUN,274.5,67.6,72.9,47.7,81.8,6.7,2.2
+grass,Low,-0.05,K0AZ,Aleksandar Kovacevic,USA,274,61.4,78.8,44.4,80.4,13,4
+grass,Mid,0.003,KI95,Miomir Kecmanovic,SRB,274,66.3,71.7,53,81.6,4,2.6
+grass,Mid,-0.118,D0FJ,Luciano Darderi,ITA,273,61.4,68.1,51.7,86.8,8.3,3.3
+grass,Mid,-0.006,F0DM,Arthur Fery,GBR,272.6,63.1,70.5,54.3,81.9,4.8,2
+grass,Mid,-0.141,B0T6,Thijs Boogaard,NED,272.6,64.8,70.3,50.7,83.3,7.5,4
+grass,Low,-0.255,BU13,Zizou Bergs,BEL,272.3,61.4,76.7,46.6,83.3,10,5.7
+grass,Mid,-0.061,H0BH,Rinky Hijikata,AUS,272,61.3,71.8,54,81.4,6.2,2.7
+grass,Low,-0.409,RE44,Andrey Rublev,RUS,270,59.8,73.3,50.5,82.4,13.5,9.5
+grass,Mid,-0.007,B0CD,Jenson Brooksby,USA,268.7,68.8,68.6,52.2,75.8,4.3,1
+grass,Low,-0.211,S0K7,Zachary Svajda,USA,267.6,57.4,76.8,49.1,80,7.3,3
+grass,Mid,-0.27,DH58,Alex de Minaur,AUS,266.6,57.1,71.4,56,81.2,4,3.1
+grass,Low,-0.645,TA29,Marco Trungelliti,ARG,265.9,60.6,75,46.8,85,6.5,8
+grass,Low,-0.389,C0C8,Juan Manuel Cerundolo,ARG,265.9,57.2,73.2,50.3,82.4,7.3,4.5
+grass,Low,-0.357,KI82,Vit Kopriva,CZE,265.7,58.8,73,50.3,80.6,7.2,4.2
+grass,Low,-0.405,KF17,Soonwoo Kwon,KOR,265.6,51.9,72.9,56.2,82.1,7.5,5
+grass,Low,-0.442,T0HA,Learner Tien,USA,265.3,61.3,70.7,48.9,82.4,7,5
+grass,Low,-0.415,V812,Botic van de Zandschulp,NED,264.1,61.7,72.5,45.4,78.5,10.8,4.8
+grass,Mid,-0.233,M0AW,Nicolas Mejia,COL,263.9,66.3,68.3,48.4,74.4,9,2.5
+grass,Low,-0.513,F724,Marton Fucsovics,HUN,263.1,59,70.9,52.3,81.6,4.3,5
+grass,Mid,-0.295,S0TM,Toby Samuel,GBR,262.9,62.8,69,51.8,76.5,5.2,2.4
+grass,Low,-0.347,C0E9,Flavio Cobolli,ITA,262.6,55.9,74.8,47,77.9,10,3
+grass,Mid,-0.31,MW02,Corentin Moutet,FRA,262.2,63.7,68.8,51.6,76.5,3.8,2.2
+grass,Mid,-0.25,G0EU,Felix Gill,GBR,261,65.7,64.9,48.6,73.3,10,1.5
+grass,Low,-0.683,D0C1,Jesper de Jong,NED,260.6,58.4,71.3,47.4,77.5,13.5,7.5
+grass,Low,-0.599,T0A1,Thiago Agustin Tirante,ARG,260.6,57.1,73.7,44.7,82.4,7.7,5
+grass,Mid,-0.618,N771,Cameron Norrie,GBR,260.5,66.5,67.3,49.4,77.8,5.5,6
+grass,Low,-0.51,O0A2,Gauthier Onclin,BEL,260.5,59.1,75.6,46.3,81,2,3.5
+grass,Low,-0.501,J0DZ,Rafael Jodar,ESP,260.3,60,70.7,48,77.2,8.7,4.3
+grass,Low,-0.498,HB64,Quentin Halys,FRA,260,52.5,78.7,47,77.4,8.4,4
+grass,Low,-0.41,J0AZ,Kyrian Jacquet,FRA,259.6,47.6,77.5,54.1,77.4,8,5
+grass,Mid,-0.304,H0DC,Giles Hussey,GBR,259.2,70.5,62,54.5,72.2,1.5,1.5
+grass,Mid,-0.386,ME82,Adrian Mannarino,FRA,258.6,61.9,67.4,55.1,72.7,3.7,2.2
+grass,Mid,-0.418,M0OQ,James McCabe,AUS,258.4,66,69.5,42.6,78.3,3.5,1.5
+grass,Low,-0.588,K0A3,Patrick Kypson,USA,258.2,62.5,68.1,48.1,75,9.5,5
+grass,Low,-0.87,F0BY,Jacob Fearnley,GBR,258,59.4,69,50,81.6,6,8
+grass,Mid,-0.441,M0N7,Daniel Merida,ESP,257.5,70.5,64.4,47.5,70.6,7.5,3
+grass,Mid,-0.464,B0ID,Ignacio Buse,PER,255.2,64.9,69.2,50.3,70.1,2.7,2
+grass,Mid,-0.571,R0EB,Valentin Royer,FRA,255.1,59.8,69.1,49.5,74.4,5.3,3
+grass,Low,-0.741,SU55,Denis Shapovalov,CAN,254.1,59.2,69,53.5,69.2,9.5,6.3
+grass,Low,-0.779,C0AU,Francisco Cerundolo,ARG,253.7,57,69.5,49.4,78.3,4.3,4.8
+grass,Low,-0.51,M0HU,Shintaro Mochizuki,JPN,252.4,48.2,76.2,49.8,77,3.5,2.3
+grass,Low,-0.736,W0AH,Harry Wendelken,GBR,251.8,55.3,70.6,50,75.9,3.5,3.5
+grass,Mid,-0.663,P09Z,Alexei Popyrin,AUS,251.6,61.2,71.7,46.1,68.6,7.7,3.7
+grass,Low,-0.846,P0HT,Jack Pinnington Jones,GBR,251.5,64.3,70.3,41.2,75,6,5.3
+grass,Low,-0.571,RH16,Casper Ruud,NOR,250.8,68.3,73.9,31.3,73.3,10,6
+grass,Low,-1.028,M0QI,Alex Michelsen,USA,249,63,69.6,40.7,72.7,12,9
+grass,Mid,-0.781,C977,Marin Cilic,CRO,246.1,61.2,70.6,42.3,67.6,7.2,2.8
+grass,Mid,-1.179,V0DP,Adolfo Daniel Vallejo,PAR,241.4,58.6,64.7,49,70.6,4.5,6
+grass,Mid,-1.076,TE30,Alejandro Tabilo,CHI,236.9,61.4,67.2,41.9,64.7,4.7,3
+grass,Low,-1.204,A0FC,Matteo Arnaldi,ITA,236.3,52.7,70.7,42.7,66.7,8,4.5
+grass,Mid,-1.255,S0NV,Abdullah Shelbayh,JOR,235.4,59.1,65.4,44.4,70,1,4.5
+grass,Mid,-0.677,D923,Damir Dzumhur,BIH,233.1,67.1,50.9,56.1,60,1.5,2.5
+grass,Mid,-1.309,B0FV,Roman Andres Burruchaga,ARG,231.6,67.9,63.2,39,63,3.5,5
+grass,Mid,-1.213,V832,Aleksandar Vukic,AUS,218.6,58,57.5,47.6,54.5,3.5,2.5
+grass,Mid,-1.244,V0DZ,Luca Van Assche,FRA,173.6,64.3,40.7,40,28.6,2,2
